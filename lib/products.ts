@@ -52,7 +52,7 @@ export const categories = [
 export const products: Product[] = [
   {
     slug: '5-amino-1mq-50mg',
-    image: '/images/xmed4.png',
+    image: '/images/xmed8.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -186,7 +186,7 @@ export const products: Product[] = [
   },
   {
     slug: 'hgh-frag-5mg',
-    image: '/images/xmed8.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -218,7 +218,7 @@ export const products: Product[] = [
   },
   {
     slug: 'aod9604-5mg',
-    image: '/images/xmed9.png',
+    image: '/images/xmed24.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -249,7 +249,7 @@ export const products: Product[] = [
   },
   {
     slug: 'tesamorelin-5mg',
-    image: '/images/xmed10.png',
+    image: '/images/xmed23.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -281,7 +281,7 @@ export const products: Product[] = [
   },
   {
     slug: 'mots-c-10mg',
-    image: '/images/xmed11.png',
+    image: '/images/xmed13.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -312,7 +312,7 @@ export const products: Product[] = [
   },
   {
     slug: 'ss-31-50mg',
-    image: '/images/xmed12.png',
+    image: '/images/xmed22.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -344,7 +344,7 @@ export const products: Product[] = [
   },
   {
     slug: 'ipamorelin-5mg',
-    image: '/images/xmed13.png',
+    image: '/images/xmed22.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -376,7 +376,7 @@ export const products: Product[] = [
   },
   {
     slug: 'cjc-1295-no-dac-5mg',
-    image: '/images/xmed14.png',
+    image: '/images/xmed15.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -407,7 +407,7 @@ export const products: Product[] = [
   },
   {
     slug: 'melanotan-2-10mg',
-    image: '/images/xmed15.png',
+    image: '/images/xmed16.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -438,7 +438,7 @@ export const products: Product[] = [
   },
   {
     slug: 'igf-1-lr3-1mg',
-    image: '/images/xmed16.png',
+    image: '/images/xmed17.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -593,7 +593,7 @@ export const products: Product[] = [
   },
   {
     slug: 'pt-141-10mg',
-    image: '/images/xmed21.png',
+    image: '/images/xmed14.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -750,7 +750,7 @@ export const products: Product[] = [
   },
   {
     slug: 'tirzepatide-5mg',
-    image: '/images/xmed26.png',
+    image: '/images/xmed10.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -782,7 +782,7 @@ export const products: Product[] = [
   },
   {
     slug: 'slu-pp-332-1mg-30-tabs',
-    image: '/images/xmed27.png',
+    image: '/images/xmed9.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -846,7 +846,7 @@ export const products: Product[] = [
   },
   {
     slug: 'hgh-100iu-10ml',
-    image: '/images/xmed29.png',
+    image: '/images/xmed7.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -878,7 +878,7 @@ export const products: Product[] = [
   },
   {
     slug: 'bacteriostatic-water-2ml',
-    image: '/images/xmed2.jpeg',
+    image: '/images/xmed6.png',
     bogo: false,
     specifications: {
       purity: 'N/A (Sterile)',
