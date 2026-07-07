@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, useScroll, useTransform, useInView } from 'framer-motion';
 import { 
   ArrowRight, ArrowUpRight, Play,
   Beaker, Shield, FileText, Globe, Microscope,
-  FlaskConical, TestTubes, Factory, Truck
+  FlaskConical, TestTubes, Factory, Truck, ShoppingBag
 } from 'lucide-react';
+import { getSupabaseClient } from '@/lib/supabase';
 import type { Product } from '@/lib/products';
 import type { Variants } from 'framer-motion';
 
@@ -47,12 +48,43 @@ interface HomeClientProps {
 export default function HomeClient({ products, categories }: HomeClientProps) {
   /* Hero products */
   const heroPeptides = [
-    { slug: 'bpc-157-5mg', name: 'BPC-157', strength: '5 Mg', image: '/images/bpc_157_nobg.png', previewImage: '/images/bpc_157_nobg.png', subtitle: 'Body Protection Compound 157', purity: '99.8% Purity Verified' },
-    { slug: 'retatrutide-10mg', name: 'Retatrutide', strength: '10 Mg', image: '/images/retatrutide_nobg.png', previewImage: '/images/retatrutide_nobg.png', subtitle: 'Novel multi-receptor agonist', purity: '99.9% HPLC Certified' },
-    { slug: 'tb-500-10mg', name: 'TB-500', strength: '10 Mg', image: '/images/tb_500_nobg.png', previewImage: '/images/tb_500_nobg.png', subtitle: 'Thymosin Beta-4 synthetic peptide', purity: '99.7% HPLC Certified' },
+    { slug: 'bpc-157-5mg', name: 'BPC-157', strength: '5 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG3_baweau.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG3_baweau.png', subtitle: 'Body Protection Compound 157', purity: '99.8% Purity Verified' },
+    { slug: 'retatrutide-10mg', name: 'Retatrutide', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png', subtitle: 'Novel multi-receptor agonist', purity: '99.9% HPLC Certified' },
+    { slug: 'tb-500-10mg', name: 'TB-500', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG2_ya70n7.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG2_ya70n7.png', subtitle: 'Thymosin Beta-4 synthetic peptide', purity: '99.7% HPLC Certified' },
   ];
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
   const activePeptide = heroPeptides[activeHeroIdx];
+  const [newOrderNotification, setNewOrderNotification] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel('homepage-order-notifications')
+      .on(
+        'postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'orders' }, 
+        (payload: any) => {
+          console.log('Homepage Realtime Order:', payload.new);
+          setNewOrderNotification({
+            id: payload.new.id,
+            name: payload.new.name,
+            total: Number(payload.new.total),
+            city: payload.new.city
+          });
+          // Hide notification after 8 seconds
+          setTimeout(() => {
+            setNewOrderNotification(null);
+          }, 8000);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   /* 16 Featured products to display on home page */
   const featuredProducts = products.slice(0, 16);
@@ -204,16 +236,7 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
               </motion.div>
             </AnimatePresence>
 
-            {/* Syringe */}
-            <motion.div
-              animate={{ y: [0, -10, 0], rotate: [0, 2, 0] }}
-              transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-5 right-0 w-24 h-48 z-10 pointer-events-none select-none hidden lg:block"
-            >
-              <div className="relative w-full h-full">
-                <Image src="/images/xmed2.jpeg" alt="Syringe" fill className="object-contain transform rotate-[-30deg] opacity-45 drop-shadow-xl" />
-              </div>
-            </motion.div>
+
 
             {/* Thumbnails */}
             <div className="absolute bottom-0 flex gap-3 z-30">
@@ -297,8 +320,21 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
                         </div>
                       </div>
 
-                      {/* Wide Gradient Button - Clear & Premium Action */}
-                      <div className="mt-auto pt-2">
+                      {/* Price & Action Button */}
+                      <div className="mt-auto pt-2 flex flex-col gap-2.5">
+                        <div className="flex items-center justify-between px-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-mono text-ink font-bold text-lg">
+                              €{p.price.toFixed(2)}
+                            </span>
+                            {p.compareAtPrice && (
+                              <span className="font-mono text-slate-400 line-through text-xs">
+                                €{p.compareAtPrice.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
                         <div className="w-full btn-gradient py-2.5 px-4 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 group-hover:from-blue-500 group-hover:to-violet-500 transition-all shadow-md group-hover:shadow-lg">
                           <span>View Compound</span>
                           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -445,10 +481,7 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
               ))}
             </div>
 
-            {/* Vial decoration */}
-            <div className="absolute right-[-10px] bottom-[-20px] w-36 h-52 z-0 select-none pointer-events-none opacity-20">
-              <Image src="/images/xmed6.png" alt="Decoration" width={144} height={208} className="object-contain transform rotate-[15deg] drop-shadow-lg" />
-            </div>
+
           </motion.div>
         </div>
       </RevealSection>
@@ -483,6 +516,38 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
           </div>
         </motion.div>
       </RevealSection>
+
+      {/* Realtime Order Notification Toast */}
+      <AnimatePresence>
+        {newOrderNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="fixed bottom-6 right-6 z-50 glass-static glass-noise border border-blue-500/30 p-5 rounded-2xl shadow-glass-strong max-w-sm flex items-start gap-4"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-white flex items-center justify-center flex-shrink-0 animate-bounce">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col gap-1 text-left">
+              <span className="text-[10px] font-mono font-bold text-blue-650 uppercase tracking-widest leading-none">New Order Received!</span>
+              <span className="text-xs font-bold text-ink leading-tight mt-1">
+                {newOrderNotification.name} from {newOrderNotification.city} just placed a run.
+              </span>
+              <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100/50">
+                <span className="font-mono text-[9px] font-semibold text-slate-400">RUN #{newOrderNotification.id.substring(0, 8).toUpperCase()}</span>
+                <span className="font-mono text-xs font-bold text-blue-600">€{newOrderNotification.total.toFixed(2)}</span>
+              </div>
+            </div>
+            <button 
+              onClick={() => setNewOrderNotification(null)}
+              className="text-slate-400 hover:text-ink text-xs font-bold font-mono ml-2 flex-shrink-0"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

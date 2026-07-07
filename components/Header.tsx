@@ -12,6 +12,9 @@ export default function Header() {
   const { count } = useCart();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

@@ -1,8 +1,15 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/products';
 import { ArrowRight } from 'lucide-react';
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
   return (
     <footer className="mt-32 bg-gradient-to-br from-[#0c1626] to-[#121f35] border-t border-white/[0.08] text-slate-400 relative z-10">
       {/* Main Footer Grid */}
