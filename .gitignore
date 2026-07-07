@@ -7,3 +7,6 @@ out
 .vercel
 *.log
 .DS_Store
+.env*
+scripts/db-migrate-products.js
+

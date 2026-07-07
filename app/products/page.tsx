@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { products, categories, siteConfig } from '@/lib/products';
+import { fetchProductsFromDb, categories, siteConfig } from '@/lib/products';
 import ShopClient from '@/components/ShopClient';
 
 export const metadata: Metadata = {
@@ -16,7 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const dynamicProducts = await fetchProductsFromDb();
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-slate-950 flex items-center justify-center pt-28 pb-20">
@@ -26,7 +28,8 @@ export default function ProductsPage() {
         </div>
       </div>
     }>
-      <ShopClient products={products} categories={categories} />
+      <ShopClient products={dynamicProducts} categories={categories} />
     </Suspense>
   );
 }
+

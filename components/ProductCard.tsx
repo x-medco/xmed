@@ -29,11 +29,11 @@ export default function ProductCard({ product }: { product: Product }) {
               sizes="(max-width: 768px) 50vw, 25vw"
             />
             
-            {/* BOGO Tag overlay */}
-            {product.bogo && (
+            {/* Offer Tag overlay */}
+            {product.offer && (
               <div className="absolute top-4 left-4 z-10 flex items-center gap-1 bg-blue-600 text-white border border-blue-500/20 text-[9px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-sm animate-pulse">
                 <Sparkles className="w-2.5 h-2.5 text-blue-200" />
-                BOGO FREE
+                {product.offer}
               </div>
             )}
           </div>
@@ -72,9 +72,16 @@ export default function ProductCard({ product }: { product: Product }) {
             {/* Price & Action Button */}
             <div className="mt-auto pt-2 flex flex-col gap-2.5">
               <div className="flex items-center justify-between px-1">
-                <span className="font-mono text-ink font-bold text-lg">
-                  €{product.price.toFixed(2)}
-                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-ink font-bold text-lg">
+                    €{product.price.toFixed(2)}
+                  </span>
+                  {product.compareAtPrice && (
+                    <span className="font-mono text-slate-400 line-through text-xs">
+                      €{product.compareAtPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Wide Gradient Button */}

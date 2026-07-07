@@ -1,5 +1,36 @@
 -- Supabase SQL Database Schema for X-Med.co
 
+-- 0. PRODUCTS TABLE
+CREATE TABLE IF NOT EXISTS public.products (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  category TEXT NOT NULL,
+  strength TEXT NOT NULL,
+  format TEXT NOT NULL CHECK (format IN ('vial', 'tablets', 'pills', 'pen', 'water')),
+  price NUMERIC(10, 2) NOT NULL,
+  compare_at_price NUMERIC(10, 2),
+  includes_water BOOLEAN DEFAULT true NOT NULL,
+  short_description TEXT NOT NULL,
+  long_description TEXT[] NOT NULL,
+  highlights TEXT[] NOT NULL,
+  keywords TEXT[] NOT NULL,
+  meta_title TEXT NOT NULL,
+  meta_description TEXT NOT NULL,
+  faqs JSONB NOT NULL,
+  image TEXT NOT NULL,
+  bogo BOOLEAN DEFAULT false NOT NULL,
+  offer TEXT,
+  discount NUMERIC(5, 2) DEFAULT 0.00 NOT NULL,
+  specifications JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access to products" 
+  ON public.products FOR SELECT USING (true);
+
 -- 1. PROFILE TABLE
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,

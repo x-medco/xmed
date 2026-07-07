@@ -58,11 +58,11 @@ export default function ProductClient({ product, related }: ProductClientProps) 
                 priority
               />
 
-              {/* BOGO Tag overlay */}
-              {product.bogo && (
+              {/* Offer Tag overlay */}
+              {product.offer && (
                 <div className="absolute top-4 left-4 z-10 flex items-center gap-1 bg-blue-600 text-white border border-blue-500/20 text-[10px] font-mono font-bold tracking-wider px-3 py-1 rounded-full shadow-md backdrop-blur-sm animate-pulse">
                   <Sparkles className="w-3 h-3 text-blue-200" />
-                  BOGO OFFER ACTIVE
+                  {product.offer}
                 </div>
               )}
 
@@ -108,10 +108,10 @@ export default function ProductClient({ product, related }: ProductClientProps) 
                   </span>
                 )}
               </div>
-              {product.bogo && (
+              {product.offer && (
                 <div className="text-xs text-blue-655 font-semibold font-mono uppercase tracking-wider mt-2 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-blue-650" />
-                  BOGO: Buy 1 vial, get a 2nd free (added automatically at checkout)
+                  PROMO OFFER: {product.bogo ? 'Buy 1 vial, get a 2nd free (applied at checkout)' : product.offer}
                 </div>
               )}
             </div>

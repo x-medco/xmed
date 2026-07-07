@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { getProductBySlug } from '@/lib/products';
+import { fetchProductBySlug } from '@/lib/products';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
       let originalSubtotal = 0;
       let calculatedDiscount = 0;
       
-      lines.forEach((l) => {
-        const prod = getProductBySlug(l.slug);
+      for (const l of lines) {
+        const prod = await fetchProductBySlug(l.slug);
         if (prod) {
           originalSubtotal += prod.price * l.qty;
           if (prod.bogo) {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
             calculatedDiscount += freeQty * prod.price;
           }
         }
-      });
+      }
 
       const { data: order, error: orderErr } = await supabaseServer
         .from('orders')
@@ -63,15 +63,16 @@ export async function POST(req: NextRequest) {
         dbOrderId = order.id;
         
         // Insert order items
-        const orderItemsToInsert = lines.map((l) => {
-          const prod = getProductBySlug(l.slug);
-          return {
+        const orderItemsToInsert = [];
+        for (const l of lines) {
+          const prod = await fetchProductBySlug(l.slug);
+          orderItemsToInsert.push({
             order_id: dbOrderId,
             product_slug: l.slug,
             quantity: l.qty,
             price: prod ? prod.price : 0
-          };
-        });
+          });
+        }
 
         const { error: itemsErr } = await supabaseServer
           .from('order_items')
@@ -95,46 +96,40 @@ export async function POST(req: NextRequest) {
 
     const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' as any });
 
-    const line_items = lines
-      .map((l: { slug: string; qty: number }) => {
-        const product = getProductBySlug(l.slug);
-        if (!product) return null;
-        
-        // factor in BOGO free quantities for the pricing definition in Stripe
-        // Stripe doesn't natively do BOGO in standard line items easily, so we can
-        // adjust the average unit price, or send them as split items where the free ones are €0.
-        // Sending paid ones at normal price and free ones as separate €0 line items is the cleanest!
-        const paidQty = product.bogo ? Math.ceil(l.qty / 2) : l.qty;
-        const freeQty = product.bogo ? l.qty - paidQty : 0;
-        
-        const items = [];
-        
-        // Paid items
-        items.push({
-          quantity: paidQty,
+    const line_items = [];
+    for (const l of lines) {
+      const product = await fetchProductBySlug(l.slug);
+      if (!product) continue;
+      
+      // factor in BOGO free quantities for the pricing definition in Stripe
+      // Stripe doesn't natively do BOGO in standard line items easily, so we can
+      // adjust the average unit price, or send them as split items where the free ones are €0.
+      // Sending paid ones at normal price and free ones as separate €0 line items is the cleanest!
+      const paidQty = product.bogo ? Math.ceil(l.qty / 2) : l.qty;
+      const freeQty = product.bogo ? l.qty - paidQty : 0;
+      
+      // Paid items
+      line_items.push({
+        quantity: paidQty,
+        price_data: {
+          currency: 'eur',
+          unit_amount: Math.round(product.price * 100),
+          product_data: { name: `${product.name} (${product.strength})` },
+        },
+      });
+      
+      // Free items (BOGO)
+      if (freeQty > 0) {
+        line_items.push({
+          quantity: freeQty,
           price_data: {
             currency: 'eur',
-            unit_amount: Math.round(product.price * 100),
-            product_data: { name: `${product.name} (${product.strength})` },
+            unit_amount: 0,
+            product_data: { name: `${product.name} (${product.strength}) [BOGO FREE]` },
           },
         });
-        
-        // Free items (BOGO)
-        if (freeQty > 0) {
-          items.push({
-            quantity: freeQty,
-            price_data: {
-              currency: 'eur',
-              unit_amount: 0,
-              product_data: { name: `${product.name} (${product.strength}) [BOGO FREE]` },
-            },
-          });
-        }
-        
-        return items;
-      })
-      .filter(Boolean)
-      .flat();
+      }
+    }
 
     // Include shipping fee in line items if applicable
     const shippingAmount = amount < 150 ? 9.9 : 0;

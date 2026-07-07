@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { products, getProductBySlug, getRelatedProducts, siteConfig } from '@/lib/products';
+import { products, fetchProductBySlug, fetchRelatedProducts, siteConfig } from '@/lib/products';
 import ProductClient from '@/components/ProductClient';
 
 interface Props {
@@ -8,11 +8,12 @@ interface Props {
 }
 
 export function generateStaticParams() {
+  // Built at compile time using static catalog to keep build phase offline-resilient
   return products.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const product = getProductBySlug(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await fetchProductBySlug(params.slug);
   if (!product) return {};
   
   const title = `${product.name} ${product.strength} | HPLC Tested Peptide — X-Med`;
@@ -45,11 +46,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ProductPage({ params }: Props) {
-  const product = getProductBySlug(params.slug);
+export default async function ProductPage({ params }: Props) {
+  const product = await fetchProductBySlug(params.slug);
   if (!product) return notFound();
   
-  const related = getRelatedProducts(product);
+  const related = await fetchRelatedProducts(product);
 
   const productJsonLd = {
     '@context': 'https://schema.org',

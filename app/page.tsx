@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { products, categories, siteConfig } from '@/lib/products';
+import { fetchProductsFromDb, categories, siteConfig } from '@/lib/products';
 import HomeClient from '@/components/HomeClient';
 
 export const metadata: Metadata = {
@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  return <HomeClient products={products} categories={categories} />;
+export default async function HomePage() {
+  const dynamicProducts = await fetchProductsFromDb();
+  return <HomeClient products={dynamicProducts} categories={categories} />;
 }
+

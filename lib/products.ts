@@ -18,6 +18,8 @@ export type Product = {
   faqs: FAQ[];
   image: string;
   bogo: boolean;
+  offer?: string;
+  discount?: number;
   specifications: {
     purity: string;
     storage: string;
@@ -916,4 +918,127 @@ export function getRelatedProducts(product: Product, count = 4): Product[] {
   return products
     .filter((p) => p.slug !== product.slug && p.category === product.category)
     .slice(0, count);
+}
+
+export async function fetchProductsFromDb(): Promise<Product[]> {
+  try {
+    const { getSupabaseClient } = require('./supabase');
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*');
+    
+    if (error || !data || data.length === 0) {
+      return products;
+    }
+    
+    return data.map((row: any) => ({
+      slug: row.slug,
+      name: row.name,
+      category: row.category,
+      strength: row.strength,
+      format: row.format,
+      price: Number(row.price),
+      compareAtPrice: row.compare_at_price ? Number(row.compare_at_price) : undefined,
+      includesWater: row.includes_water,
+      shortDescription: row.short_description,
+      longDescription: row.long_description,
+      highlights: row.highlights,
+      keywords: row.keywords,
+      metaTitle: row.meta_title,
+      metaDescription: row.meta_description,
+      faqs: row.faqs,
+      image: row.image,
+      bogo: row.bogo,
+      offer: row.offer || undefined,
+      discount: row.discount ? Number(row.discount) : undefined,
+      specifications: row.specifications
+    }));
+  } catch (err) {
+    console.error('Error in fetchProductsFromDb:', err);
+    return products;
+  }
+}
+
+export async function fetchProductBySlug(slug: string): Promise<Product | undefined> {
+  try {
+    const { getSupabaseClient } = require('./supabase');
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (error || !data) {
+      return getProductBySlug(slug);
+    }
+
+    return {
+      slug: data.slug,
+      name: data.name,
+      category: data.category,
+      strength: data.strength,
+      format: data.format,
+      price: Number(data.price),
+      compareAtPrice: data.compare_at_price ? Number(data.compare_at_price) : undefined,
+      includesWater: data.includes_water,
+      shortDescription: data.short_description,
+      longDescription: data.long_description,
+      highlights: data.highlights,
+      keywords: data.keywords,
+      metaTitle: data.meta_title,
+      metaDescription: data.meta_description,
+      faqs: data.faqs,
+      image: data.image,
+      bogo: data.bogo,
+      offer: data.offer || undefined,
+      discount: data.discount ? Number(data.discount) : undefined,
+      specifications: data.specifications
+    };
+  } catch (err) {
+    return getProductBySlug(slug);
+  }
+}
+
+export async function fetchRelatedProducts(product: Product, count = 4): Promise<Product[]> {
+  try {
+    const { getSupabaseClient } = require('./supabase');
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .neq('slug', product.slug)
+      .eq('category', product.category)
+      .limit(count);
+
+    if (error || !data || data.length === 0) {
+      return getRelatedProducts(product, count);
+    }
+
+    return data.map((row: any) => ({
+      slug: row.slug,
+      name: row.name,
+      category: row.category,
+      strength: row.strength,
+      format: row.format,
+      price: Number(row.price),
+      compareAtPrice: row.compare_at_price ? Number(row.compare_at_price) : undefined,
+      includesWater: row.includes_water,
+      shortDescription: row.short_description,
+      longDescription: row.long_description,
+      highlights: row.highlights,
+      keywords: row.keywords,
+      metaTitle: row.meta_title,
+      metaDescription: row.meta_description,
+      faqs: row.faqs,
+      image: row.image,
+      bogo: row.bogo,
+      offer: row.offer || undefined,
+      discount: row.discount ? Number(row.discount) : undefined,
+      specifications: row.specifications
+    }));
+  } catch (err) {
+    return getRelatedProducts(product, count);
+  }
 }
