@@ -46,14 +46,6 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ products, categories }: HomeClientProps) {
-  /* Hero products */
-  const heroPeptides = [
-    { slug: 'bpc-157-5mg', name: 'BPC-157', strength: '5 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443781/xmed.co_qw2ulu.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443781/xmed.co_qw2ulu.png', subtitle: 'Body Protection Compound 157', purity: '99.8% Purity Verified' },
-    { slug: 'retatrutide-10mg', name: 'Retatrutide', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png', subtitle: 'Novel multi-receptor agonist', purity: '99.9% HPLC Certified' },
-    { slug: 'tb-500-10mg', name: 'TB-500', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/1_tkluia.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/1_tkluia.png', subtitle: 'Thymosin Beta-4 synthetic peptide', purity: '99.7% HPLC Certified' },
-  ];
-  const [activeHeroIdx, setActiveHeroIdx] = useState(0);
-  const activePeptide = heroPeptides[activeHeroIdx];
   const [newOrderNotification, setNewOrderNotification] = useState<any>(null);
 
   useEffect(() => {
@@ -175,84 +167,16 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
-            className="flex flex-col items-center justify-center relative h-[500px] lg:h-[550px]"
+            className="w-full relative h-[450px] md:h-[500px] lg:h-[550px]"
           >
-            {/* Glass platform ellipse */}
-            <motion.div
-              animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute bottom-16 w-64 h-8 rounded-full"
-              style={{
-                background: 'radial-gradient(ellipse, rgba(37,99,235,0.15) 0%, rgba(124,58,237,0.08) 50%, transparent 70%)',
-                filter: 'blur(4px)',
-              }}
-            />
-
-            {/* Floating vial */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeHeroIdx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-                className="relative flex items-center justify-center"
-              >
-                <motion.div
-                  animate={{ y: [0, -14, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative w-56 h-80 md:w-64 md:h-96 z-20"
-                >
-                  <Image src={activePeptide.image} alt={activePeptide.name} fill className="object-contain drop-shadow-[0_20px_60px_rgba(37,99,235,0.2)]" priority />
-                </motion.div>
-
-                {/* Info card (glass) */}
-                <motion.div
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                  className="absolute right-[-20px] md:right-[-60px] top-1/2 -translate-y-1/2 bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl p-5 w-52 z-30 shadow-glass"
-                >
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 flex items-center justify-center">
-                        <span className="font-mono text-white font-bold text-xs">X</span>
-                      </div>
-                      <span className="font-display font-bold text-ink text-sm">X-Med</span>
-                    </div>
-                    <h3 className="font-display font-black text-lg text-ink">{activePeptide.name}</h3>
-                    <p className="text-[10px] text-graphite mt-1">{activePeptide.subtitle}</p>
-                    <div className="mt-3 pt-3 border-t border-white/40">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-violet-500" />
-                        <span className="text-xs text-ink/70 font-medium">{activePeptide.strength}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                        <span className="text-[10px] text-graphite/60">{activePeptide.purity}</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </AnimatePresence>
-
-
-
-            {/* Thumbnails */}
-            <div className="absolute bottom-0 flex gap-3 z-30">
-              {heroPeptides.map((pep, idx) => (
-                <button
-                  key={pep.slug}
-                  onClick={() => setActiveHeroIdx(idx)}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center p-1 backdrop-blur-md shadow-md transition-all ${
-                    activeHeroIdx === idx
-                      ? 'bg-white/70 border-2 border-blue-500 scale-110 ring-4 ring-blue-500/15'
-                      : 'bg-white/30 border border-white/40 hover:bg-white/50'
-                  }`}
-                >
-                  <Image src={pep.previewImage} alt={pep.name} width={34} height={34} className="object-contain p-0.5" />
-                </button>
-              ))}
+            <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-white/20 shadow-2xl">
+              <Image 
+                src="https://res.cloudinary.com/tedfhije/image/upload/v1783446109/home_1_qceldg.jpg" 
+                alt="X-Med Premium Peptide Research" 
+                fill 
+                className="object-cover" 
+                priority 
+              />
             </div>
           </motion.div>
         </div>
