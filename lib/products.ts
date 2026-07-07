@@ -718,34 +718,44 @@ export const products: Product[] = [
   },
   {
     slug: 'retatrutide-10mg-quick-pen',
-    image: '/images/xmed25.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783446972/ChatGPT_Image_Jul_7_2026_06_14_47_AM_ttkfde.png',
     bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
-      storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
-      dosage: 'Research dependent',
-      usage: 'Chemical Compound: research & laboratory use only'
+      storage: 'Cold-chain: 2-8°C (discreet and easy storage)',
+      dosage: '30 clicks = 1MG',
+      usage: 'Precision click-based dose control'
     },
-    name: 'Retatrutide Quick Pen',
+    name: 'X-Med Retatrutide Quick Pen 10MG – 3ML',
     category: 'Weight Management',
     strength: '10mg',
     format: 'pen',
     price: 170,
     includesWater: false,
     shortDescription:
-      'Retatrutide 10mg pre-loaded in a ready-to-use quick pen device, for research teams that prefer a pre-dosed delivery format.',
+      'X-Med Retatrutide Quick Pen 10MG is a precision quick-pen format product designed for accurate, convenient, and easy dose control. The pen comes with a total volume of 3ML and a total strength of 10MG, offering a clean and practical application experience with click-based dosing support.',
     longDescription: [
-      'The Retatrutide Quick Pen delivers the same 10mg triple-agonist research compound in a pre-filled pen format, eliminating the manual reconstitution step for research teams that prefer a ready-to-use device.',
-      'Because the compound is pre-formulated in solution inside the pen, no separate bacteriostatic water vial is required or included — the pen is ready for laboratory use as supplied.',
-      'Each batch is independently tested for identity and purity before dispatch, and pens are shipped cold-chain protected to preserve stability in transit.',
+      'X-Med Retatrutide Quick Pen 10MG is designed for users who need accuracy, convenience, and controlled dosage in a modern pen format. The quick-pen system helps make application simple, discreet, and easy to manage, while the click-based mechanism supports precise measurement with every use.',
+      'Each pen contains a total of 10MG Retatrutide in 3ML volume, giving a structured dosage system for better control. The product design focuses on precision, usability, and reliability, making it suitable for professional treatment guidance where accurate dosage is important.',
+      'The X-Med Quick Pen format is built to provide a practical experience with clear dosage calculation. According to the product guide, 30 clicks equal 1MG, allowing users to follow dosage instructions more carefully under medical supervision. The compact pen design also makes it easier to store, carry, and use compared to traditional vial-based formats.',
+      'Important Note: This product should be used only under the guidance of a qualified doctor or healthcare professional. Always follow medical advice and local regulations before using or selling this type of product.'
     ],
-    highlights: ['10mg pre-filled pen', 'No reconstitution required', 'Purity tested', 'Cold-chain shipping'],
-    keywords: ['Retatrutide pen', 'Retatrutide quick pen', 'Retatrutide 10mg pen', 'buy Retatrutide pen'],
-    metaTitle: 'Retatrutide 10mg Quick Pen | Pre-Filled Research Pen — X-Med',
-    metaDescription: 'Retatrutide 10mg Quick Pen, pre-filled and ready to use for research. Purity tested, cold-chain EU shipping.',
+    highlights: [
+      'Product: Retatrutide Quick Pen',
+      'Brand: X-Med',
+      'Strength: 10MG',
+      'Volume: 3ML total',
+      'Format: Quick Pen',
+      'Dosage Control: Click-based precision system',
+      'Usage Style: Easy, practical, and discreet',
+      'Quality Focus: Designed for accurate and controlled application'
+    ],
+    keywords: ['Retatrutide pen', 'Retatrutide quick pen', 'Retatrutide 10mg pen', 'buy Retatrutide pen', 'Retatrutide 3ml pen'],
+    metaTitle: 'X-Med Retatrutide Quick Pen 10MG – 3ML | X-Med',
+    metaDescription: 'X-Med Retatrutide Quick Pen 10MG is a precision click-based quick-pen format with 3ML volume and 10MG strength.',
     faqs: [
-      { q: 'Do I need bacteriostatic water with the pen?', a: 'No — the pen is pre-formulated in solution and ready for use as supplied.' },
-      { q: 'How is the pen shipped?', a: 'Cold-chain protected packaging is used to preserve the pre-filled solution during transit.' },
+      { q: 'How many clicks equal 1MG in the Retatrutide Quick Pen?', a: 'According to the product guide, 30 clicks equal 1MG, allowing for careful dose calculations.' },
+      { q: 'Does this pen require reconstitution?', a: 'No, the quick pen format is ready-to-use and designed for convenient and discreet application.' }
     ],
   },
   {
