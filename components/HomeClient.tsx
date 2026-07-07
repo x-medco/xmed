@@ -48,9 +48,9 @@ interface HomeClientProps {
 export default function HomeClient({ products, categories }: HomeClientProps) {
   /* Hero products */
   const heroPeptides = [
-    { slug: 'bpc-157-5mg', name: 'BPC-157', strength: '5 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG3_baweau.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG3_baweau.png', subtitle: 'Body Protection Compound 157', purity: '99.8% Purity Verified' },
-    { slug: 'retatrutide-10mg', name: 'Retatrutide', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png', subtitle: 'Novel multi-receptor agonist', purity: '99.9% HPLC Certified' },
-    { slug: 'tb-500-10mg', name: 'TB-500', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG2_ya70n7.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG2_ya70n7.png', subtitle: 'Thymosin Beta-4 synthetic peptide', purity: '99.7% HPLC Certified' },
+    { slug: 'bpc-157-5mg', name: 'BPC-157', strength: '5 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443781/xmed.co_qw2ulu.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443781/xmed.co_qw2ulu.png', subtitle: 'Body Protection Compound 157', purity: '99.8% Purity Verified' },
+    { slug: 'retatrutide-10mg', name: 'Retatrutide', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png', subtitle: 'Novel multi-receptor agonist', purity: '99.9% HPLC Certified' },
+    { slug: 'tb-500-10mg', name: 'TB-500', strength: '10 Mg', image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/1_tkluia.png', previewImage: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/1_tkluia.png', subtitle: 'Thymosin Beta-4 synthetic peptide', purity: '99.7% HPLC Certified' },
   ];
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
   const activePeptide = heroPeptides[activeHeroIdx];
