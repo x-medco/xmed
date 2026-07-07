@@ -139,12 +139,12 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
                 Explore Peptides
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <button type="button" className="btn-glass h-12 px-6 text-sm">
+              <Link href="/about" className="btn-glass h-12 px-6 text-sm">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white flex items-center justify-center">
                   <Play className="w-3 h-3 fill-current ml-0.5" />
                 </div>
-                How We Work
-              </button>
+                About X-MED
+              </Link>
             </div>
 
             {/* Stats — each in a glass tile */}
