@@ -82,10 +82,10 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
   const bestSellerSlugs = [
     'bpc-157-5mg',
     'tb-500-10mg',
-    'retatrutide-10mg-quick-pen',
+    'retatrutide-5mg',
     'retatrutide-10mg',
+    'retatrutide-10mg-quick-pen',
     'tirzepatide-5mg',
-    'ghk-cu-50mg',
     'nad-500mg',
     '5-amino-1mq-50mg'
   ];

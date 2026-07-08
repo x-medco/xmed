@@ -96,13 +96,22 @@ export default function ShopClient({ products, categories }: ShopClientProps) {
     } else if (sortOption === 'name-desc') {
       result.sort((a, b) => b.name.localeCompare(a.name));
     } else {
-      const popularSlugs = [
-        'bpc-157-5mg', 'tb-500-10mg', 'retatrutide-5mg', 'ipamorelin-5mg', 'ghk-cu-50mg', 'melanotan-2-10mg'
+      const staticOrder = [
+        '5-amino-1mq-50mg', 'nad-500mg', 'bpc-157-5mg', 'tb-500-10mg',
+        'hgh-frag-5mg', 'aod9604-5mg', 'tesamorelin-5mg', 'mots-c-10mg',
+        'ss-31-50mg', 'ipamorelin-5mg', 'cjc-1295-no-dac-5mg', 'melanotan-2-10mg',
+        'igf-1-lr3-1mg', 'igf-des-1mg', 'igf-des-2mg', 'dsip-5mg',
+        'selank-5mg', 'pt-141-10mg', 'ghk-cu-50mg', 'retatrutide-5mg',
+        'retatrutide-10mg', 'retatrutide-10mg-quick-pen', 'tirzepatide-5mg',
+        'slu-pp-332-1mg-30-tabs', 'kpv-peptide-500mcg-30-pills', 'hgh-100iu-10ml',
+        'bacteriostatic-water-2ml'
       ];
       result.sort((a, b) => {
-        const aPop = popularSlugs.includes(a.slug) ? 1 : 0;
-        const bPop = popularSlugs.includes(b.slug) ? 1 : 0;
-        return bPop - aPop;
+        const idxA = staticOrder.indexOf(a.slug);
+        const idxB = staticOrder.indexOf(b.slug);
+        const valA = idxA === -1 ? 999 : idxA;
+        const valB = idxB === -1 ? 999 : idxB;
+        return valA - valB;
       });
     }
 
