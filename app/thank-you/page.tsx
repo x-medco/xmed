@@ -63,9 +63,8 @@ function ThankYouContent() {
       </h1>
       
       <p className="text-slate-600 text-sm leading-relaxed mt-4">
-        {isDemo
-          ? 'Your simulated order has been registered successfully. Connect your payment integrations in the API route to enable live processing.'
-          : 'A receipt, order summary, and shipping tracking information have been sent to your laboratory contact email.'}
+        Your order has been registered successfully and your research materials are secured!
+        <strong> We will contact you shortly via WhatsApp to coordinate your manual payment options and finalize your shipment.</strong>
       </p>
 
       {/* Order Reference Details */}

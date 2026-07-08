@@ -336,7 +336,7 @@ export const emailAutomations: EmailTemplate[] = [
       <span class="badge" style="background-color: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10b981;">Order Confirmed</span>
       <h1 class="title">XM-10924 Received</h1>
       <p class="text">
-        Thank you for choosing X-Med. Your payment has been confirmed, and your research materials have entered our packaging queue.
+        Thank you for choosing X-Med. Your order has been registered successfully, and your research materials have been reserved. A member of our support team will contact you shortly via WhatsApp to coordinate your payment options and finalize your shipment.
       </p>
 
       <div class="product-box">
@@ -347,7 +347,7 @@ export const emailAutomations: EmailTemplate[] = [
             <td style="padding: 8px 0; text-align: right;">1x €${Number(vars.price || 50).toFixed(2)}</td>
           </tr>
           <tr>
-            <td style="padding: 8px 0; font-weight: bold; color: #ffffff;">Total Amount Paid</td>
+            <td style="padding: 8px 0; font-weight: bold; color: #ffffff;">Total Invoice Amount</td>
             <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-family: monospace;">€${Number(vars.price || 50).toFixed(2)}</td>
           </tr>
         </table>
