@@ -7,7 +7,9 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname.startsWith('/admin')) {
+  const isAdminSubdomain = typeof window !== 'undefined' && 
+    (window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('admin.localhost'));
+  if (pathname.startsWith('/admin') || isAdminSubdomain) {
     return null;
   }
   return (
