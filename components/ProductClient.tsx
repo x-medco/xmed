@@ -8,7 +8,7 @@ import FAQSection from '@/components/FAQ';
 import ProductCard from '@/components/ProductCard';
 import { 
   Sparkles, ShieldAlert, Award, Database, 
-  CheckCircle2, ChevronRight 
+  CheckCircle2, ChevronRight, Info
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -103,6 +103,23 @@ export default function ProductClient({ product, related }: ProductClientProps) 
                   </span>
                 )}
               </div>
+              
+              {product.includesWater && (
+                <div className="glass glass-noise p-4 rounded-2xl border border-blue-500/10 bg-blue-500/5 flex items-start gap-3 mt-4">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-655 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Reconstitution Kit Included</span>
+                    <p className="text-xs text-slate-650 leading-relaxed">
+                      When a customer purchases a peptide, it comes in powder form; we provide a vial of bacteriostatic water for reconstitution and use.
+                    </p>
+                    <span className="text-[10px] font-bold text-blue-605 mt-1">
+                      Cada peptídeo + 1 vial water free
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Add to Cart Actions */}

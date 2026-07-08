@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/cart-context';
 import { products, getProductBySlug } from '@/lib/products';
-import { Trash2, ArrowLeft, ShoppingBag, Sparkles, ShieldAlert, ShoppingCart } from 'lucide-react';
+import { Trash2, ArrowLeft, ShoppingBag, Sparkles, ShieldAlert, ShoppingCart, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
@@ -177,6 +177,19 @@ export default function CartPage() {
               <div className="flex justify-between text-ink font-extrabold text-base">
                 <span>Total</span>
                 <span>€{total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="glass p-4 rounded-xl border border-blue-500/10 bg-blue-500/5 flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-0.5 text-xs">
+                <span className="font-mono text-[9px] text-slate-400 font-bold uppercase tracking-wider">Reconstitution Note</span>
+                <p className="text-slate-650 leading-relaxed text-[11px]">
+                  Each peptide order comes in powder form. We include <strong>1 free bacteriostatic water vial (2ml)</strong> with each peptide vial purchased for reconstitution and use.
+                </p>
+                <span className="text-[10px] font-bold text-blue-600 mt-1">
+                  Cada peptídeo + 1 vial water free
+                </span>
               </div>
             </div>
 
