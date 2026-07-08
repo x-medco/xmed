@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     // 2. N-Genius Online integration
     const ngeniusApiKey = process.env.NGENIUS_API_KEY || 'OWUzZTllMTctZjE2MS00NTE5LTkxNDAtOWZlMzFhODU5NjVhOjI0MGNmMDE3LTIzZDctNGIyMS1hZGU5LTBmNGM5ODI4NTJhMw==';
     const ngeniusOutletId = process.env.NGENIUS_OUTLET_ID || 'edf7ea50-a3cf-4df9-b517-69d34af1d2be';
-    const ngeniusEnv = process.env.NGENIUS_ENV || 'sandbox'; // 'sandbox' or 'live'
+    const ngeniusEnv = process.env.NGENIUS_ENV || 'live'; // 'sandbox' or 'live'
     
     const gatewayUrl = ngeniusEnv === 'live' 
       ? 'https://api-gateway.ngenius-payments.com' 
@@ -158,8 +158,11 @@ export async function POST(req: NextRequest) {
     } catch (err: any) {
       console.error('[N-Genius Checkout Exception]:', err.message);
       
-      // FALLBACK TO DEMO MODE: if Sandbox gateway has issues (like the 502 Bad Gateway),
-      // fallback to Demo mode so testing runs smoothly and successfully!
+      if (ngeniusEnv === 'live') {
+        return NextResponse.json({ error: 'Payment initialization failed. Please contact support.' }, { status: 500 });
+      }
+      
+      // Sandbox fallback to Demo Mode for developer testing
       console.warn('[N-Genius Fallback]: Redirecting client to Demo checkout page.');
       const orderRef = dbOrderId || `XM-DEMO-${Math.floor(100000 + Math.random() * 900000)}`;
       return NextResponse.json({ demo: true, redirectUrl: `/thank-you?demo=1&session_id=${orderRef}` });
