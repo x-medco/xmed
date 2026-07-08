@@ -128,7 +128,9 @@ export default function OrdersTab({ data }: OrdersTabProps) {
             <div key={idx} className="p-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100/50 dark:border-slate-800/50 rounded-2xl flex flex-col gap-1.5 relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: step.color === 'bg-blue-500' ? '#3b82f6' : step.color === 'bg-violet-500' ? '#8b5cf6' : step.color === 'bg-pink-500' ? '#ec4899' : step.color === 'bg-emerald-500' ? '#10b981' : '#f43f5e' }} />
               <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider pl-2">{step.label}</span>
-              <span className="font-display font-black text-2xl text-ink pl-2">{step.count} runs</span>
+              <span className="font-display font-black text-xl sm:text-2xl text-ink pl-2">
+                {step.count} {step.count === 1 ? 'order' : 'orders'}
+              </span>
             </div>
           ))}
         </div>
@@ -136,19 +138,19 @@ export default function OrdersTab({ data }: OrdersTabProps) {
 
       {/* 1.5 PACK & DISPATCH QUEUE HIGHLIGHT */}
       {packAndDispatchCount > 0 && (
-        <div className="glass glass-noise border border-blue-500/30 p-5 rounded-3xl flex items-center justify-between shadow-sm">
+        <div className="glass glass-noise border border-blue-500/30 p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center animate-pulse">
+            <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center animate-pulse flex-shrink-0">
               <ShoppingBag className="w-5.5 h-5.5" />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-0.5">
               <h4 className="font-display font-black text-base text-ink">Pack & Dispatch Queue</h4>
-              <p className="text-xs text-slate-500 font-medium font-mono">
-                {packAndDispatchCount} parcels need preparing (Status: Placed / Confirmed)
+              <p className="text-xs text-slate-500 font-medium font-mono leading-relaxed">
+                {packAndDispatchCount} {packAndDispatchCount === 1 ? 'parcel' : 'parcels'} need preparing (Status: Placed / Confirmed)
               </p>
             </div>
           </div>
-          <span className="font-mono text-2xl font-black text-blue-650 bg-blue-500/10 border border-blue-500/15 px-4.5 py-1.5 rounded-2xl animate-pulse">
+          <span className="font-mono text-lg sm:text-2xl font-black text-blue-650 bg-blue-500/10 border border-blue-500/15 px-3.5 sm:px-4.5 py-1 sm:py-1.5 rounded-2xl animate-pulse w-fit flex-shrink-0">
             {packAndDispatchCount} Pending
           </span>
         </div>
@@ -160,7 +162,7 @@ export default function OrdersTab({ data }: OrdersTabProps) {
           <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-900 px-4.5 py-2.5 rounded-2xl border border-slate-200/50 w-full md:max-w-md">
             <Search className="w-4 h-4 text-slate-400" />
             <input
-              placeholder="Search by researcher name, email, city, run ID..."
+              placeholder="Search by customer name, email, city, order ID..."
               className="bg-transparent text-sm text-ink focus:outline-none w-full font-medium"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -197,12 +199,12 @@ export default function OrdersTab({ data }: OrdersTabProps) {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-100/50 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                <th className="pb-3 font-semibold">Run ID</th>
-                <th className="pb-3 font-semibold">Researcher</th>
+                <th className="pb-3 font-semibold">Order ID</th>
+                <th className="pb-3 font-semibold">Customer</th>
                 <th className="pb-3 font-semibold">Location</th>
                 <th className="pb-3 font-semibold text-center">Status</th>
                 <th className="pb-3 font-semibold text-center">Payment Method</th>
-                <th className="pb-3 font-semibold text-right">Total Run Amount</th>
+                <th className="pb-3 font-semibold text-right">Total Amount</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/30">

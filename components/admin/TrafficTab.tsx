@@ -96,7 +96,9 @@ export default function TrafficTab({ data }: TrafficTabProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Total Orders</span>
-            <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">{stats.ordersCount} runs</span>
+            <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">
+              {stats.ordersCount} {stats.ordersCount === 1 ? 'order' : 'orders'}
+            </span>
           </div>
         </div>
       </div>
