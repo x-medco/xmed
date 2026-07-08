@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, Users, ShoppingBag, Euro, Compass, 
-  Package, ShoppingCart, Settings, RefreshCw, BarChart2, Mail
+  Package, ShoppingCart, Settings, RefreshCw, BarChart2, Mail, LogOut
 } from 'lucide-react';
 import OverviewTab from '@/components/admin/OverviewTab';
 import LiveVisitorsTab from '@/components/admin/LiveVisitorsTab';
@@ -37,6 +37,11 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch data from backend API
+  const handleLogout = async () => {
+    await fetch('/api/admin/auth', { method: 'DELETE' });
+    window.location.href = '/admin/login';
+  };
+
   const fetchDashboardData = async (range: string) => {
     setLoading(true);
     setError(null);
@@ -134,6 +139,15 @@ export default function AdminPage() {
               </button>
             );
           })}
+          
+          <div className="border-t border-slate-100/50 dark:border-slate-800/50 my-2" />
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold font-display text-rose-500 hover:bg-rose-500/10 transition-all text-left"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Log Out Session</span>
+          </button>
         </nav>
         
         {/* Sidebar Footer */}

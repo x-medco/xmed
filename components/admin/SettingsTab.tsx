@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   Database, RefreshCw, Key, ShieldCheck, 
-  Settings, Save, Check, Upload, AlertCircle, FileText 
+  Settings, Save, Check, Upload, AlertCircle, FileText,
+  AlertTriangle, Power, ShieldAlert
 } from 'lucide-react';
 
 export default function SettingsTab() {
@@ -12,6 +13,51 @@ export default function SettingsTab() {
   const [storeName, setStoreName] = useState('X-MED Peptide Reagents');
   const [webhookUrl, setWebhookUrl] = useState('https://xmed-gamma.vercel.app/api/webhooks/stripe');
   const [saved, setSaved] = useState(false);
+
+  // Maintenance Mode States
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMaintenance = async () => {
+      try {
+        const res = await fetch('/api/admin/maintenance');
+        const data = await res.json();
+        if (data.success) {
+          setMaintenanceMode(data.maintenanceMode);
+        }
+      } catch (err) {
+        console.error("Failed to load maintenance status:", err);
+      }
+    };
+    fetchMaintenance();
+  }, []);
+
+  const handleToggleMaintenance = async () => {
+    if (!confirm(`Are you absolutely sure you want to ${maintenanceMode ? 'DEACTIVATE' : 'ACTIVATE'} website-wide maintenance mode?\n\nThis will take the entire storefront offline for all research visitors.`)) {
+      return;
+    }
+    setMaintenanceLoading(true);
+    try {
+      const nextValue = !maintenanceMode;
+      const res = await fetch('/api/admin/maintenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: nextValue })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMaintenanceMode(data.maintenanceMode);
+      } else {
+        alert("Action failed: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update system calibration status.");
+    } finally {
+      setMaintenanceLoading(false);
+    }
+  };
 
   // WooCommerce Importer States
   const [importing, setImporting] = useState(false);
@@ -321,6 +367,47 @@ export default function SettingsTab() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* 2.5 SYSTEM OPERATIONS & MAINTENANCE */}
+      <div className="glass glass-noise p-6 rounded-3xl shadow-sm flex flex-col gap-4">
+        <h4 className="font-display font-bold text-sm text-ink flex items-center gap-2">
+          <Power className="w-4 h-4 text-rose-500" />
+          System Kill Switch & Maintenance
+        </h4>
+        
+        <p className="text-xs text-slate-500 font-mono leading-relaxed">
+          Instantly deactivate the public storefront and show the glassmorphic Maintenance Mode splash screen. Admin URLs remain accessible.
+        </p>
+
+        <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800 rounded-2xl">
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-ink">Website Status</span>
+            <span className="text-[10px] font-mono text-slate-400 mt-0.5">
+              {maintenanceMode ? '🚨 UNDER MAINTENANCE' : '🟢 LIVE & OPERATIONAL'}
+            </span>
+          </div>
+
+          <button
+            onClick={handleToggleMaintenance}
+            disabled={maintenanceLoading}
+            className={`px-4 h-9.5 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-sm ${
+              maintenanceMode 
+                ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
+                : 'bg-rose-500 text-white hover:bg-rose-600'
+            }`}
+          >
+            <Power className="w-3.5 h-3.5" />
+            {maintenanceLoading ? 'Processing...' : maintenanceMode ? 'Turn Website ON' : 'Turn Website OFF'}
+          </button>
+        </div>
+
+        {maintenanceMode && (
+          <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl text-[11px] font-mono flex items-start gap-2 leading-relaxed">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span>WARNING: Maintenance mode is active. Only users logged into the admin dashboard can view database layouts. All other routes are rewritten.</span>
+          </div>
+        )}
       </div>
 
       {/* 3. API SECURITY STATUS */}
