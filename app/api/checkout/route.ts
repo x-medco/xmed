@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
           country: customer.country,
           total: amount,
           discount: 0,
-          status: 'pending_analysis'
+          status: 'placed'
         })
         .select()
         .single();

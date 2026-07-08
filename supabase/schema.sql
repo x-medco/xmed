@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
   country TEXT NOT NULL,
   total NUMERIC(10, 2) NOT NULL,
   discount NUMERIC(10, 2) DEFAULT 0.00,
-  status TEXT DEFAULT 'pending_analysis' NOT NULL,
+  status TEXT DEFAULT 'placed' NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
