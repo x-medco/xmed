@@ -76,11 +76,6 @@ export default function ProductCard({ product }: { product: Product }) {
                   <span className="font-mono text-ink font-bold text-sm sm:text-base md:text-lg">
                     €{product.price.toFixed(2)}
                   </span>
-                  {product.compareAtPrice && (
-                    <span className="font-mono text-slate-400 line-through text-[10px] sm:text-xs">
-                      €{product.compareAtPrice.toFixed(2)}
-                    </span>
-                  )}
                 </div>
               </div>
 

@@ -97,23 +97,12 @@ export default function ProductClient({ product, related }: ProductClientProps) 
             <div>
               <div className="flex items-baseline gap-3">
                 <span className="font-mono text-3xl font-bold text-ink">€{product.price.toFixed(2)}</span>
-                {product.compareAtPrice && (
-                  <span className="font-mono text-sm text-slate-400 line-through">
-                    €{product.compareAtPrice.toFixed(2)}
-                  </span>
-                )}
                 {product.includesWater && (
-                  <span className="text-xs text-blue-650 font-semibold px-2 py-0.5 rounded bg-blue-50 border border-blue-100">
+                  <span className="text-xs text-blue-655 font-semibold px-2 py-0.5 rounded bg-blue-50 border border-blue-100">
                     + Free Water Vial
                   </span>
                 )}
               </div>
-              {product.offer && (
-                <div className="text-xs text-blue-655 font-semibold font-mono uppercase tracking-wider mt-2 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-650" />
-                  PROMO OFFER: {product.bogo ? 'Buy 1 vial, get a 2nd free (applied at checkout)' : product.offer}
-                </div>
-              )}
             </div>
 
             {/* Add to Cart Actions */}

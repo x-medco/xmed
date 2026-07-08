@@ -120,7 +120,7 @@ export const products: Product[] = [
   {
     slug: 'bpc-157-5mg',
     image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369834/xmed27_ou6g8b.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -154,7 +154,7 @@ export const products: Product[] = [
   {
     slug: 'tb-500-10mg',
     image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369827/xmed26_xjvze2.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -187,7 +187,7 @@ export const products: Product[] = [
   {
     slug: 'hgh-frag-5mg',
     image: '/images/xmed25.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -219,7 +219,7 @@ export const products: Product[] = [
   {
     slug: 'aod9604-5mg',
     image: '/images/xmed24.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -250,7 +250,7 @@ export const products: Product[] = [
   {
     slug: 'tesamorelin-5mg',
     image: '/images/xmed23.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -345,7 +345,7 @@ export const products: Product[] = [
   {
     slug: 'ipamorelin-5mg',
     image: '/images/xmed22.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -377,7 +377,7 @@ export const products: Product[] = [
   {
     slug: 'cjc-1295-no-dac-5mg',
     image: '/images/xmed15.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -408,7 +408,7 @@ export const products: Product[] = [
   {
     slug: 'melanotan-2-10mg',
     image: '/images/xmed16.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -625,7 +625,7 @@ export const products: Product[] = [
   {
     slug: 'ghk-cu-50mg',
     image: '/images/xmed22.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -656,7 +656,7 @@ export const products: Product[] = [
   {
     slug: 'retatrutide-5mg',
     image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369836/xmed12_pzkuwz.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
@@ -688,7 +688,7 @@ export const products: Product[] = [
   {
     slug: 'retatrutide-10mg',
     image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369833/xmed11_hfuhpe.png',
-    bogo: true,
+    bogo: false,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
       storage: 'Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)',
