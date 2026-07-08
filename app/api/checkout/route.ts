@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchProductBySlug } from '@/lib/products';
 import { createClient } from '@supabase/supabase-js';
+import { emailAutomations } from '@/lib/email-templates';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -64,6 +65,59 @@ export async function POST(req: NextRequest) {
 
         if (itemsErr) {
           console.error('Error inserting order items in Supabase:', itemsErr);
+        } else {
+          // 1.5. Send order confirmation email via Resend
+          try {
+            const resendApiKey = process.env.RESEND_API_KEY;
+            if (resendApiKey) {
+              console.log(`[Resend] Sending order confirmation email to ${customer.email}...`);
+              const template = emailAutomations.find(t => t.id === 'order-confirmation');
+              if (template) {
+                // Compile product summary string
+                const productList = [];
+                for (const l of lines) {
+                  const prod = await fetchProductBySlug(l.slug);
+                  if (prod) {
+                    productList.push(`${l.qty}x ${prod.name} (${prod.strength})`);
+                  }
+                }
+                const productSummaryStr = productList.join(', ');
+
+                const html = template.getHtml({
+                  productName: productSummaryStr || 'Research Reagents',
+                  price: amount,
+                  customerName: customer.name,
+                  address: `${customer.address}, ${customer.city}, ${customer.postcode}, ${customer.country}`,
+                  trackingNumber: 'Pending WhatsApp Payment Setup'
+                });
+
+                const emailResponse = await fetch('https://api.resend.com/emails', {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${resendApiKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    from: 'X-Med Reagents <sales@x-med.co>',
+                    to: [customer.email],
+                    subject: `Order Confirmed: Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`,
+                    html: html
+                  })
+                });
+
+                if (!emailResponse.ok) {
+                  const errText = await emailResponse.text();
+                  console.error('[Resend API Error]:', errText);
+                } else {
+                  console.log(`[Resend] Order confirmation email sent successfully.`);
+                }
+              }
+            } else {
+              console.warn('[Resend] Warning: RESEND_API_KEY environment variable is not defined.');
+            }
+          } catch (mailErr: any) {
+            console.error('[Resend Exception]: Failed to send mail:', mailErr.message);
+          }
         }
       }
     }
