@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, Users, ShoppingBag, Euro, Compass, 
   Package, ShoppingCart, Settings, RefreshCw, BarChart2, Mail, LogOut,
-  Menu, X
+  Menu, X, Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '@/lib/theme-context';
 import OverviewTab from '@/components/admin/OverviewTab';
 import LiveVisitorsTab from '@/components/admin/LiveVisitorsTab';
 import SalesTab from '@/components/admin/SalesTab';
@@ -31,6 +32,7 @@ const tabs = [
 ];
 
 export default function AdminPage() {
+  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('all');
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -179,31 +181,45 @@ export default function AdminPage() {
             <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Control Panel Center</span>
           </div>
 
-          {/* Date range picker filter */}
-          {activeTab !== 'settings' && activeTab !== 'live' && (
-            <div className="flex rounded-xl bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200/50 w-fit">
-              {[
-                { id: 'today', name: 'Today' },
-                { id: '7d', name: '7D' },
-                { id: '30d', name: '30D' },
-                { id: 'month', name: 'Month' },
-                { id: 'year', name: 'Year' },
-                { id: 'all', name: 'All' }
-              ].map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => setDateRange(r.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[9.5px] sm:text-[10.5px] font-bold transition-all ${
-                    dateRange === r.id 
-                      ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-800' 
-                      : 'text-slate-450 hover:text-ink'
-                  }`}
-                >
-                  {r.name}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Date range picker filter & Theme toggle */}
+          <div className="flex items-center gap-3">
+            {activeTab !== 'settings' && activeTab !== 'live' && (
+              <div className="flex rounded-xl bg-slate-105 dark:bg-slate-900 p-1 border border-slate-200/50 w-fit">
+                {[
+                  { id: 'today', name: 'Today' },
+                  { id: '7d', name: '7D' },
+                  { id: '30d', name: '30D' },
+                  { id: 'month', name: 'Month' },
+                  { id: 'year', name: 'Year' },
+                  { id: 'all', name: 'All' }
+                ].map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => setDateRange(r.id)}
+                    className={`px-2.5 py-1 rounded-lg text-[9.5px] sm:text-[10.5px] font-bold transition-all ${
+                      dateRange === r.id 
+                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-800' 
+                        : 'text-slate-450 hover:text-ink'
+                    }`}
+                  >
+                    {r.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-xl border border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-850 dark:hover:text-slate-200 transition-all flex items-center justify-center shadow-sm"
+              title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '10s' }} />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-500" />
+              )}
+            </button>
+          </div>
         </header>
 
         {/* TAB WORKSPACE */}
