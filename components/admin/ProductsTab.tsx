@@ -183,7 +183,8 @@ export default function ProductsTab({ data }: ProductsTabProps) {
           />
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Catalog Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-100/50 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
@@ -214,9 +215,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
             </thead>
             <tbody className="divide-y divide-slate-100/30">
               {filteredProducts.map((p: any) => {
-                // Mock view-to-purchase conversion rate (highly realistic)
                 const mockConvRate = 1.8 + (p.units_sold % 4) * 0.7 + (p.revenue > 1000 ? 1.2 : 0);
-                
                 return (
                   <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="py-3">
@@ -301,6 +300,90 @@ export default function ProductsTab({ data }: ProductsTabProps) {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Catalog Card View */}
+        <div className="block md:hidden space-y-4">
+          {filteredProducts.map((p: any) => {
+            const mockConvRate = 1.8 + (p.units_sold % 4) * 0.7 + (p.revenue > 1000 ? 1.2 : 0);
+            return (
+              <div key={p.id} className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col gap-3.5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-150 overflow-hidden relative flex-shrink-0">
+                    {p.image_url ? (
+                      <Image src={p.image_url} alt={p.name} fill className="object-contain p-1" />
+                    ) : (
+                      <div className="w-full h-full bg-slate-200" />
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-slate-900 dark:text-slate-100 text-sm truncate">{p.name}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">Price: €{p.price.toFixed(2)} | {p.category}</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2 bg-slate-100/50 dark:bg-slate-850/50 p-2.5 rounded-xl text-center text-[10px] font-mono">
+                  <div>
+                    <span className="text-slate-450 block font-semibold">Sold</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">{p.units_sold}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-450 block font-semibold">Revenue</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">{formatCurrency(p.revenue)}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-450 block font-semibold">Margin</span>
+                    <span className="font-bold text-emerald-600 text-xs mt-0.5 block">{p.margin.toFixed(1)}%</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStock(p.slug, p.stock_qty - 1)}
+                      className="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-650 hover:bg-slate-250 flex items-center justify-center font-bold text-sm shadow-sm"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      className="w-10 text-center bg-transparent border-b border-slate-200 dark:border-slate-800 font-mono font-bold text-slate-850 dark:text-slate-100 text-xs focus:outline-none"
+                      value={p.stock_qty}
+                      onChange={(e) => handleUpdateStock(p.slug, Number(e.target.value))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStock(p.slug, p.stock_qty + 1)}
+                      className="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-650 hover:bg-slate-250 flex items-center justify-center font-bold text-sm shadow-sm"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold text-slate-450 text-[10px]">Conv: {mockConvRate.toFixed(1)}%</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleActive(p.slug, p.is_active)}
+                      className={`px-3 py-1 rounded-full text-[9px] font-bold border transition-all ${
+                        p.is_active 
+                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' 
+                          : 'bg-rose-500/10 border-rose-500/20 text-rose-500'
+                      }`}
+                    >
+                      {p.is_active ? 'Active' : 'Hidden'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {filteredProducts.length === 0 && (
+            <div className="py-8 text-center font-mono text-slate-450 text-xs">
+              No products match your search criteria.
+            </div>
+          )}
         </div>
       </div>
 

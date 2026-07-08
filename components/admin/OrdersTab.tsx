@@ -184,7 +184,8 @@ export default function OrdersTab({ data }: OrdersTabProps) {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-100/50 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
@@ -254,6 +255,59 @@ export default function OrdersTab({ data }: OrdersTabProps) {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card List View */}
+        <div className="block md:hidden space-y-4">
+          {filteredOrders.map((o: any) => (
+            <div key={o.id} className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-slate-400 text-[10.5px]">#{o.id.substring(0, 8).toUpperCase()}</span>
+                <select
+                  value={o.status}
+                  onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                  className={`px-3 py-1 rounded-full text-[9px] font-mono font-bold tracking-wide uppercase border outline-none bg-transparent cursor-pointer ${
+                    o.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                    o.status === 'shipped' ? 'bg-pink-500/10 text-pink-600 border-pink-500/20' :
+                    o.status === 'confirmed' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
+                    o.status === 'returned' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                    o.status === 'cancelled' ? 'bg-slate-400/10 text-slate-400 border-slate-400/20' :
+                    'bg-blue-500/10 text-blue-600 border-blue-500/20'
+                  }`}
+                >
+                  <option value="placed" className="bg-white dark:bg-slate-900">Placed</option>
+                  <option value="confirmed" className="bg-white dark:bg-slate-900">Confirmed</option>
+                  <option value="shipped" className="bg-white dark:bg-slate-900">Shipped</option>
+                  <option value="delivered" className="bg-white dark:bg-slate-900">Delivered</option>
+                  <option value="returned" className="bg-white dark:bg-slate-900">Returned</option>
+                  <option value="cancelled" className="bg-white dark:bg-slate-900">Cancelled</option>
+                </select>
+              </div>
+              
+              <div className="flex flex-col gap-1">
+                <span className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-tight">{o.name}</span>
+                <span className="text-[10px] text-slate-450 font-mono truncate">{o.email}</span>
+                <div className="flex items-center gap-1.5 mt-1 text-slate-650">
+                  <MapPin className="w-3.5 h-3.5 text-slate-405" />
+                  <span className="text-[11px] font-bold">{o.city}, {o.country}</span>
+                </div>
+              </div>
+              
+              <div className="border-t border-slate-150 dark:border-slate-800/80 my-1" />
+              
+              <div className="flex items-center justify-between">
+                <span className="bg-slate-100 dark:bg-slate-850 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded text-[10px] font-mono capitalize">
+                  {o.payment_method || 'card'}
+                </span>
+                <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">{formatCurrency(Number(o.total_amount))}</span>
+              </div>
+            </div>
+          ))}
+          {filteredOrders.length === 0 && (
+            <div className="py-8 text-center font-mono text-slate-450 text-xs">
+              No orders match your search criteria.
+            </div>
+          )}
         </div>
       </div>
     </div>
