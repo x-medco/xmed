@@ -39,6 +39,42 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [latestOrderId, setLatestOrderId] = useState<string | null>(null);
+
+  // Play premium synthesized chime sound when a new order is received
+  const playOrderChime = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      // Tone 1 (G5)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(783.99, ctx.currentTime);
+      gain1.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start();
+      osc1.stop(ctx.currentTime + 0.35);
+      
+      // Tone 2 (C6) after 120ms
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.12);
+      gain2.gain.setValueAtTime(0.2, ctx.currentTime + 0.12);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.12);
+      osc2.stop(ctx.currentTime + 0.55);
+    } catch (e) {
+      console.warn("Audio playback was blocked by browser autoplay policy:", e);
+    }
+  };
 
   // Fetch data from backend API
   const handleLogout = async () => {
@@ -46,28 +82,49 @@ export default function AdminPage() {
     window.location.href = '/admin/login';
   };
 
-  const fetchDashboardData = async (range: string) => {
-    setLoading(true);
+  const fetchDashboardData = async (range: string, silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const res = await fetch(`/api/admin/data?range=${range}`);
       const result = await res.json();
       if (result.success) {
-        setDashboardData(result.data);
+        const newData = result.data;
+        setDashboardData(newData);
+        
+        // Polling check for new order arrival
+        const currentLatestId = newData.allOrders && newData.allOrders[0] ? newData.allOrders[0].id : null;
+        if (latestOrderId !== null && currentLatestId !== null && currentLatestId !== latestOrderId) {
+          playOrderChime();
+        }
+        setLatestOrderId(currentLatestId);
       } else {
         throw new Error(result.error || 'Failed to fetch dashboard data');
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'An error occurred while loading dashboard data');
+      if (!silent) {
+        setError(err.message || 'An error occurred while loading dashboard data');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
     fetchDashboardData(dateRange);
-  }, [dateRange]);
+    
+    // Poll for new orders silently in the background every 20 seconds
+    const interval = setInterval(() => {
+      fetchDashboardData(dateRange, true);
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [dateRange, latestOrderId]);
 
   // Tab switching components routing
   const renderTabContent = () => {
