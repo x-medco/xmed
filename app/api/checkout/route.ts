@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
         .from('orders')
         .insert({
           email: customer.email,
-          name: customer.name,
-          shipping_address: customer.address,
+          name: `${customer.name} (WhatsApp: ${customer.phone || 'N/A'})`,
+          shipping_address: `${customer.address} (WhatsApp: ${customer.phone || 'N/A'})`,
           city: customer.city,
           postcode: customer.postcode,
           country: customer.country,

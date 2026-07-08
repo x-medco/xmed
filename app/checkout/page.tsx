@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({ 
     email: '', 
     name: '', 
+    phone: '', 
     address: '', 
     city: '', 
     postcode: '', 
@@ -86,17 +87,35 @@ export default function CheckoutPage() {
                 <Mail className="w-4 h-4 text-blue-600" />
                 Contact Info
               </h2>
-              <div className="relative">
-                <input
-                  required
-                  type="email"
-                  placeholder="lab@institution.org"
-                  className="glass-input pr-4"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-                <div className="text-[10px] text-slate-400 font-mono mt-1.5">
-                  Order notifications and purity report PDFs will be sent here.
+              <div className="space-y-4">
+                <div className="relative">
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block mb-1">Email Address</label>
+                  <input
+                    required
+                    type="email"
+                    placeholder="lab@institution.org"
+                    className="glass-input pr-4"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  />
+                  <div className="text-[10px] text-slate-405 font-mono mt-1">
+                    Order notifications and purity report PDFs will be sent here.
+                  </div>
+                </div>
+                
+                <div className="relative">
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block mb-1">WhatsApp Number (Required for Payment)</label>
+                  <input
+                    required
+                    type="tel"
+                    placeholder="e.g. +34 600 000 000"
+                    className="glass-input pr-4"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  />
+                  <div className="text-[10px] text-blue-650 dark:text-blue-405 font-mono font-bold mt-1.5 bg-blue-50/50 dark:bg-blue-950/20 p-2.5 rounded-lg border border-blue-100/50 dark:border-blue-900/35">
+                    ℹ️ We will contact you via WhatsApp using this number to provide payment instructions and finalize your order.
+                  </div>
                 </div>
               </div>
             </div>
@@ -190,7 +209,7 @@ export default function CheckoutPage() {
               className="w-full h-14 btn-gradient flex items-center justify-center gap-2 text-base disabled:opacity-60"
             >
               <Lock className="w-4 h-4" />
-              {loading ? 'Processing Reagent Order...' : `Pay €${finalTotal.toFixed(2)}`}
+              {loading ? 'Processing Reagent Order...' : `Place Order (Pay via WhatsApp) · €${finalTotal.toFixed(2)}`}
             </motion.button>
 
             <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-450">
