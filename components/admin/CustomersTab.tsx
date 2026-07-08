@@ -5,7 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
   ResponsiveContainer, BarChart, Bar 
 } from 'recharts';
-import { Users, Euro, RefreshCw, Award } from 'lucide-react';
+import { Users, Euro, RefreshCw, Award, MapPin } from 'lucide-react';
 
 interface CustomersTabProps {
   data: any;
@@ -190,7 +190,8 @@ export default function CustomersTab({ data }: CustomersTabProps) {
       <div className="glass glass-noise p-6 rounded-3xl shadow-sm">
         <h3 className="font-display font-black text-lg text-ink mb-5">Top Customer Lifetime Spend</h3>
         
-        <div className="overflow-x-auto">
+        {/* Desktop Customers Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-100/50 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
@@ -215,6 +216,33 @@ export default function CustomersTab({ data }: CustomersTabProps) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Customers Cards */}
+        <div className="block md:hidden space-y-4">
+          {customersList.slice(0, 10).map((c: any) => (
+            <div key={c.id} className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col gap-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{c.full_name || 'Guest Researcher'}</span>
+                <span className="font-mono text-[11px] font-bold text-blue-600">{formatCurrency(c.ltv)} LTV</span>
+              </div>
+              
+              <div className="flex flex-col gap-1 text-[11px]">
+                <span className="text-slate-450 font-mono truncate">{c.email}</span>
+                <div className="flex items-center gap-1.5 mt-1 text-slate-650">
+                  <MapPin className="w-3.5 h-3.5 text-slate-405" />
+                  <span className="font-semibold">{c.city || 'EU'}</span>
+                </div>
+              </div>
+              
+              <div className="border-t border-slate-150 dark:border-slate-800/80 my-0.5" />
+              
+              <div className="flex items-center justify-between text-[11px] text-slate-450 font-mono">
+                <span>Total Orders:</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">{c.order_count} orders</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

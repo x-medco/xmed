@@ -15,6 +15,14 @@ export default function OrdersTab({ data }: OrdersTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'placed' | 'confirmed' | 'shipped' | 'delivered' | 'returned' | 'cancelled'>('all');
   const [ordersList, setOrdersList] = useState<any[]>(data.allOrders || []);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+
+  const formatProductSlug = (slug: string) => {
+    return (slug || '')
+      .split('-')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -198,54 +206,85 @@ export default function OrdersTab({ data }: OrdersTabProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/30">
-              {filteredOrders.map((o: any) => (
-                <tr key={o.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="py-3 font-mono font-semibold text-slate-500 text-[10.5px]">
-                    #{o.id.substring(0, 8).toUpperCase()}
-                  </td>
-                  <td className="py-3">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-ink">{o.name}</span>
-                      <span className="text-[9.5px] text-slate-400 font-mono">{o.email}</span>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <span className="inline-flex items-center gap-1 font-semibold text-slate-600">
-                      <MapPin className="w-3.5 h-3.5 text-slate-405" />
-                      {o.city}, {o.country}
-                    </span>
-                  </td>
-                  <td className="py-3 text-center">
-                    <select
-                      value={o.status}
-                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
-                      className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wide uppercase border outline-none bg-transparent cursor-pointer ${
-                        o.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
-                        o.status === 'shipped' ? 'bg-pink-500/10 text-pink-600 border-pink-500/20' :
-                        o.status === 'confirmed' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
-                        o.status === 'returned' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
-                        o.status === 'cancelled' ? 'bg-slate-400/10 text-slate-400 border-slate-400/20' :
-                        'bg-blue-500/10 text-blue-600 border-blue-500/20'
+              {filteredOrders.map((o: any) => {
+                const isExpanded = expandedOrderId === o.id;
+                return (
+                  <>
+                    <tr 
+                      key={o.id} 
+                      onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
+                      className={`cursor-pointer transition-colors ${
+                        isExpanded ? 'bg-blue-500/5 hover:bg-blue-500/10' : 'hover:bg-slate-50/50'
                       }`}
                     >
-                      <option value="placed" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Placed</option>
-                      <option value="confirmed" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Confirmed</option>
-                      <option value="shipped" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Shipped</option>
-                      <option value="delivered" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Delivered</option>
-                      <option value="returned" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Returned</option>
-                      <option value="cancelled" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Cancelled</option>
-                    </select>
-                  </td>
-                  <td className="py-3 text-center">
-                    <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 px-2 py-0.5 rounded text-[10px] font-mono capitalize">
-                      {o.payment_method || 'card'}
-                    </span>
-                  </td>
-                  <td className="py-3 text-right font-mono font-bold text-slate-900">
-                    {formatCurrency(Number(o.total_amount))}
-                  </td>
-                </tr>
-              ))}
+                      <td className="py-3 font-mono font-semibold text-slate-500 text-[10.5px]">
+                        #{o.id.substring(0, 8).toUpperCase()}
+                      </td>
+                      <td className="py-3">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-ink">{o.name}</span>
+                          <span className="text-[9.5px] text-slate-400 font-mono">{o.email}</span>
+                        </div>
+                      </td>
+                      <td className="py-3">
+                        <span className="inline-flex items-center gap-1 font-semibold text-slate-600">
+                          <MapPin className="w-3.5 h-3.5 text-slate-405" />
+                          {o.city}, {o.country}
+                        </span>
+                      </td>
+                      <td className="py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={o.status}
+                          onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                          className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wide uppercase border outline-none bg-transparent cursor-pointer ${
+                            o.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                            o.status === 'shipped' ? 'bg-pink-500/10 text-pink-600 border-pink-500/20' :
+                            o.status === 'confirmed' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
+                            o.status === 'returned' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                            o.status === 'cancelled' ? 'bg-slate-400/10 text-slate-400 border-slate-400/20' :
+                            'bg-blue-500/10 text-blue-600 border-blue-500/20'
+                          }`}
+                        >
+                          <option value="placed" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Placed</option>
+                          <option value="confirmed" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Confirmed</option>
+                          <option value="shipped" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Shipped</option>
+                          <option value="delivered" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Delivered</option>
+                          <option value="returned" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Returned</option>
+                          <option value="cancelled" className="bg-white text-slate-850 dark:bg-slate-900 dark:text-slate-200">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 px-2 py-0.5 rounded text-[10px] font-mono capitalize">
+                          {o.payment_method || 'card'}
+                        </span>
+                      </td>
+                      <td className="py-3 text-right font-mono font-bold text-slate-900">
+                        {formatCurrency(Number(o.total_amount))}
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr className="bg-blue-500/5 border-b border-slate-150">
+                        <td colSpan={6} className="p-4 pl-8">
+                          <div className="flex flex-col gap-2 max-w-2xl">
+                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Ordered Product Items</span>
+                            <div className="grid gap-2 border border-slate-250 dark:border-slate-800 rounded-2xl p-4 bg-white dark:bg-slate-950/40 shadow-inner">
+                              {(o.items || []).map((item: any, idx: number) => (
+                                <div key={idx} className="flex justify-between items-center text-xs font-mono">
+                                  <span className="font-bold text-slate-700 dark:text-slate-350">{formatProductSlug(item.product_slug)}</span>
+                                  <span className="text-slate-500 font-bold">Qty: {item.quantity} × €{Number(item.price).toFixed(2)}</span>
+                                </div>
+                              ))}
+                              {(o.items || []).length === 0 && (
+                                <span className="text-slate-400 font-mono text-xs">No product details linked to this order.</span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })}
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-10 text-center font-mono text-slate-400">
@@ -259,50 +298,79 @@ export default function OrdersTab({ data }: OrdersTabProps) {
 
         {/* Mobile Card List View */}
         <div className="block md:hidden space-y-4">
-          {filteredOrders.map((o: any) => (
-            <div key={o.id} className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="font-mono font-bold text-slate-400 text-[10.5px]">#{o.id.substring(0, 8).toUpperCase()}</span>
-                <select
-                  value={o.status}
-                  onChange={(e) => handleStatusChange(o.id, e.target.value)}
-                  className={`px-3 py-1 rounded-full text-[9px] font-mono font-bold tracking-wide uppercase border outline-none bg-transparent cursor-pointer ${
-                    o.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
-                    o.status === 'shipped' ? 'bg-pink-500/10 text-pink-600 border-pink-500/20' :
-                    o.status === 'confirmed' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
-                    o.status === 'returned' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
-                    o.status === 'cancelled' ? 'bg-slate-400/10 text-slate-400 border-slate-400/20' :
-                    'bg-blue-500/10 text-blue-600 border-blue-500/20'
-                  }`}
-                >
-                  <option value="placed" className="bg-white dark:bg-slate-900">Placed</option>
-                  <option value="confirmed" className="bg-white dark:bg-slate-900">Confirmed</option>
-                  <option value="shipped" className="bg-white dark:bg-slate-900">Shipped</option>
-                  <option value="delivered" className="bg-white dark:bg-slate-900">Delivered</option>
-                  <option value="returned" className="bg-white dark:bg-slate-900">Returned</option>
-                  <option value="cancelled" className="bg-white dark:bg-slate-900">Cancelled</option>
-                </select>
-              </div>
-              
-              <div className="flex flex-col gap-1">
-                <span className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-tight">{o.name}</span>
-                <span className="text-[10px] text-slate-450 font-mono truncate">{o.email}</span>
-                <div className="flex items-center gap-1.5 mt-1 text-slate-650">
-                  <MapPin className="w-3.5 h-3.5 text-slate-405" />
-                  <span className="text-[11px] font-bold">{o.city}, {o.country}</span>
+          {filteredOrders.map((o: any) => {
+            const isExpanded = expandedOrderId === o.id;
+            return (
+              <div 
+                key={o.id} 
+                onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
+                className={`p-4 rounded-2xl flex flex-col gap-3 cursor-pointer transition-all border ${
+                  isExpanded 
+                    ? 'bg-blue-500/5 border-blue-500/30 shadow-md shadow-blue-500/5' 
+                    : 'bg-slate-50 dark:bg-slate-900 border-slate-150 dark:border-slate-800'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-slate-400 text-[10.5px]">#{o.id.substring(0, 8).toUpperCase()}</span>
+                  <select
+                    value={o.status}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                    className={`px-3 py-1 rounded-full text-[9px] font-mono font-bold tracking-wide uppercase border outline-none bg-transparent cursor-pointer ${
+                      o.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                      o.status === 'shipped' ? 'bg-pink-500/10 text-pink-600 border-pink-500/20' :
+                      o.status === 'confirmed' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
+                      o.status === 'returned' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                      o.status === 'cancelled' ? 'bg-slate-400/10 text-slate-400 border-slate-400/20' :
+                      'bg-blue-500/10 text-blue-600 border-blue-500/20'
+                    }`}
+                  >
+                    <option value="placed" className="bg-white dark:bg-slate-900">Placed</option>
+                    <option value="confirmed" className="bg-white dark:bg-slate-900">Confirmed</option>
+                    <option value="shipped" className="bg-white dark:bg-slate-900">Shipped</option>
+                    <option value="delivered" className="bg-white dark:bg-slate-900">Delivered</option>
+                    <option value="returned" className="bg-white dark:bg-slate-900">Returned</option>
+                    <option value="cancelled" className="bg-white dark:bg-slate-900">Cancelled</option>
+                  </select>
                 </div>
+                
+                <div className="flex flex-col gap-1">
+                  <span className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-tight">{o.name}</span>
+                  <span className="text-[10px] text-slate-450 font-mono truncate">{o.email}</span>
+                  <div className="flex items-center gap-1.5 mt-1 text-slate-650">
+                    <MapPin className="w-3.5 h-3.5 text-slate-405" />
+                    <span className="text-[11px] font-bold">{o.city}, {o.country}</span>
+                  </div>
+                </div>
+                
+                <div className="border-t border-slate-150 dark:border-slate-800/80 my-1" />
+                
+                <div className="flex items-center justify-between">
+                  <span className="bg-slate-100 dark:bg-slate-850 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded text-[10px] font-mono capitalize">
+                    {o.payment_method || 'card'}
+                  </span>
+                  <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">{formatCurrency(Number(o.total_amount))}</span>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-2 pt-3 border-t border-dashed border-slate-200 dark:border-slate-850 flex flex-col gap-2 animate-fade-in" onClick={(e) => e.stopPropagation()}>
+                    <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider">Ordered Product Items:</span>
+                    <div className="grid gap-2 border border-slate-200/65 dark:border-slate-850 rounded-xl p-2.5 bg-white dark:bg-slate-950/40">
+                      {(o.items || []).map((item: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center text-[10px] font-mono">
+                          <span className="font-bold text-slate-700 dark:text-slate-350 truncate max-w-[140px]">{formatProductSlug(item.product_slug)}</span>
+                          <span className="text-slate-500 font-bold">Qty: {item.quantity} × €{Number(item.price).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      {(o.items || []).length === 0 && (
+                        <span className="text-slate-405">No products detail found.</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              
-              <div className="border-t border-slate-150 dark:border-slate-800/80 my-1" />
-              
-              <div className="flex items-center justify-between">
-                <span className="bg-slate-100 dark:bg-slate-850 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded text-[10px] font-mono capitalize">
-                  {o.payment_method || 'card'}
-                </span>
-                <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">{formatCurrency(Number(o.total_amount))}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {filteredOrders.length === 0 && (
             <div className="py-8 text-center font-mono text-slate-450 text-xs">
               No orders match your search criteria.

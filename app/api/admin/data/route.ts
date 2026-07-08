@@ -234,9 +234,21 @@ export async function GET(request: Request) {
 
     // 20. All Orders list for Tab 8
     const allOrdersRes = await client.query(`
-      SELECT id, name, email, city, country, total as total_amount, status, created_at, payment_method, refund_amount
-      FROM public.orders
-      ORDER BY created_at DESC
+      SELECT o.id, o.name, o.email, o.city, o.country, o.total as total_amount, o.status, o.created_at, o.payment_method, o.refund_amount,
+             COALESCE(
+               json_agg(
+                 json_build_object(
+                   'product_slug', oi.product_slug,
+                   'quantity', oi.quantity,
+                   'price', oi.price
+                 )
+               ) FILTER (WHERE oi.id IS NOT NULL),
+               '[]'
+             ) as items
+      FROM public.orders o
+      LEFT JOIN public.order_items oi ON oi.order_id = o.id
+      GROUP BY o.id, o.name, o.email, o.city, o.country, o.total, o.status, o.created_at, o.payment_method, o.refund_amount
+      ORDER BY o.created_at DESC
       LIMIT 500
     `);
 

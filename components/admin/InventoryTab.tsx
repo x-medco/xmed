@@ -167,7 +167,8 @@ export default function InventoryTab({ data }: InventoryTabProps) {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Inventory Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-100/50 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
@@ -231,6 +232,70 @@ export default function InventoryTab({ data }: InventoryTabProps) {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Inventory Cards */}
+        <div className="block md:hidden space-y-4">
+          {filteredInventory.map((p: any) => (
+            <div key={p.id} className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-2xl flex flex-col gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-150 overflow-hidden relative flex-shrink-0">
+                  {p.image_url ? (
+                    <Image src={p.image_url} alt={p.name} fill className="object-contain p-1" />
+                  ) : (
+                    <div className="w-full h-full bg-slate-200" />
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-slate-900 dark:text-slate-100 text-sm truncate">{p.name}</span>
+                  <span className="text-[10px] text-slate-405 font-mono">{p.category}</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 bg-slate-150/50 dark:bg-slate-850/50 p-2.5 rounded-xl text-center text-[10px] font-mono">
+                <div>
+                  <span className="text-slate-450 block font-semibold text-[9px] uppercase">Cost Price</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">€{p.cost.toFixed(2)}</span>
+                </div>
+                <div>
+                  <span className="text-slate-450 block font-semibold text-[9px] uppercase">Retail Price</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 text-xs mt-0.5 block">€{p.price.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className={`font-mono font-bold text-xs ${
+                  p.stock_qty === 0 ? 'text-red-650 bg-red-500/10 px-2 py-0.5 rounded' :
+                  p.stock_qty <= p.low_stock_threshold ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded' :
+                  'text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded'
+                }`}>
+                  {p.stock_qty} vials in stock
+                </span>
+                <span className="font-mono text-[10px] text-slate-500">{p.velocity.toFixed(2)} units/day</span>
+              </div>
+              
+              <div className="border-t border-slate-150 dark:border-slate-800/80 my-0.5" />
+              
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Restock Status:</span>
+                <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${
+                  p.restockStatus === 'critical' ? 'bg-red-500/10 text-red-600 border-red-500/20' :
+                  p.restockStatus === 'suggested' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+                  'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                }`}>
+                  {p.restockStatus === 'critical' ? <AlertCircle className="w-3.5 h-3.5" /> :
+                   p.restockStatus === 'suggested' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '8s' }} /> :
+                   <CheckCircle2 className="w-3.5 h-3.5" />}
+                  {p.suggestionText}
+                </span>
+              </div>
+            </div>
+          ))}
+          {filteredInventory.length === 0 && (
+            <div className="py-8 text-center font-mono text-slate-450 text-xs">
+              No items in this inventory state.
+            </div>
+          )}
         </div>
       </div>
     </div>
