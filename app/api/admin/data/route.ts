@@ -108,19 +108,17 @@ export async function GET(request: Request) {
       GROUP BY status
     `);
 
-    // 8. Top 5 Products
+    // 8. All Products
     const topProductsRes = await client.query(`
       SELECT p.id as product_id, p.name, p.category, p.image as image_url,
-             SUM(oi.quantity) as units_sold,
-             SUM(oi.quantity * oi.price) as revenue,
+             COALESCE(SUM(oi.quantity), 0) as units_sold,
+             COALESCE(SUM(oi.quantity * oi.price), 0) as revenue,
              p.price, p.cost, p.stock_qty, p.low_stock_threshold, p.is_active, p.slug
-      FROM public.order_items oi
-      JOIN public.products p ON p.slug = oi.product_slug
-      JOIN public.orders o ON o.id = oi.order_id
-      WHERE o.status NOT IN ('cancelled') AND o.${dateFilter}
+      FROM public.products p
+      LEFT JOIN public.order_items oi ON p.slug = oi.product_slug
+      LEFT JOIN public.orders o ON o.id = oi.order_id AND o.status NOT IN ('cancelled') AND o.${dateFilter}
       GROUP BY p.id, p.name, p.category, p.image, p.price, p.cost, p.stock_qty, p.low_stock_threshold, p.is_active, p.slug
-      ORDER BY revenue DESC
-      LIMIT 10
+      ORDER BY revenue DESC, p.name ASC
     `);
 
     // 9. Top 5 Cities

@@ -21,6 +21,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
   const [sortField, setSortField] = useState<'units_sold' | 'revenue' | 'margin'>('revenue');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [productList, setProductList] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -97,6 +98,12 @@ export default function ProductsTab({ data }: ProductsTabProps) {
     return bVal - aVal;
   });
 
+  const filteredProducts = sortedProducts.filter((p: any) => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (p.slug && p.slug.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   // Calculate stagnant products (stock > 40 and revenue < €300)
   const stagnantProducts = productList
     .filter((p: any) => p.stock_qty > 35 && p.revenue < 600)
@@ -162,11 +169,18 @@ export default function ProductsTab({ data }: ProductsTabProps) {
 
       {/* 2. MAIN PRODUCTS TABLE */}
       <div className="glass glass-noise p-6 rounded-3xl shadow-sm">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="font-display font-black text-lg text-ink">Product Catalog Performance</h3>
             <p className="text-xs text-slate-400 font-mono uppercase mt-1">Detailed inventory and sales statistics</p>
           </div>
+          <input
+            type="text"
+            placeholder="Search products..."
+            className="px-4 py-2 text-xs rounded-xl border border-slate-100/30 dark:border-slate-800 bg-slate-50/5 focus:outline-none focus:border-blue-500 w-full sm:w-64 font-mono text-ink placeholder-slate-400"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
         <div className="overflow-x-auto">
@@ -199,7 +213,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/30">
-              {sortedProducts.map((p: any) => {
+              {filteredProducts.map((p: any) => {
                 // Mock view-to-purchase conversion rate (highly realistic)
                 const mockConvRate = 1.8 + (p.units_sold % 4) * 0.7 + (p.revenue > 1000 ? 1.2 : 0);
                 
