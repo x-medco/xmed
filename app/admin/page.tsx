@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, Users, ShoppingBag, Euro, Compass, 
-  Package, ShoppingCart, Settings, RefreshCw, BarChart2 
+  Package, ShoppingCart, Settings, RefreshCw, BarChart2, Mail
 } from 'lucide-react';
 import OverviewTab from '@/components/admin/OverviewTab';
 import LiveVisitorsTab from '@/components/admin/LiveVisitorsTab';
@@ -14,6 +14,7 @@ import TrafficTab from '@/components/admin/TrafficTab';
 import InventoryTab from '@/components/admin/InventoryTab';
 import OrdersTab from '@/components/admin/OrdersTab';
 import SettingsTab from '@/components/admin/SettingsTab';
+import AutomationsTab from '@/components/admin/AutomationsTab';
 
 const tabs = [
   { id: 'overview', name: 'Overview', icon: LayoutDashboard },
@@ -24,6 +25,7 @@ const tabs = [
   { id: 'traffic', name: 'Traffic & Marketing', icon: Compass },
   { id: 'inventory', name: 'Inventory', icon: Package },
   { id: 'orders', name: 'Orders', icon: BarChart2 },
+  { id: 'automations', name: 'Email Automations', icon: Mail },
   { id: 'settings', name: 'Settings', icon: Settings }
 ];
 
@@ -79,6 +81,8 @@ export default function AdminPage() {
         return <InventoryTab data={dashboardData} />;
       case 'orders':
         return <OrdersTab data={dashboardData} />;
+      case 'automations':
+        return <AutomationsTab />;
       case 'settings':
         return <SettingsTab />;
       default:
