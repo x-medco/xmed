@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { Client } from 'pg';
 
 const dbConfig = {
-  host: 'db.vhqzdmucrbcdubscyrpl.supabase.co',
+  host: 'aws-1-ap-south-1.pooler.supabase.com',
   port: 6543,
-  user: 'postgres',
+  user: 'postgres.vhqzdmucrbcdubscyrpl',
   password: "Rubben%27282",
   database: 'postgres',
   ssl: { rejectUnauthorized: false }

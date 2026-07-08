@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { Client } from 'pg';
 
 const dbConfig = {
-  host: 'db.vhqzdmucrbcdubscyrpl.supabase.co',
+  host: 'aws-1-ap-south-1.pooler.supabase.com',
   port: 6543,
-  user: 'postgres',
+  user: 'postgres.vhqzdmucrbcdubscyrpl',
   password: "Rubben%27282",
   database: 'postgres',
   ssl: { rejectUnauthorized: false }
@@ -113,12 +113,12 @@ export async function GET(request: Request) {
       SELECT p.id as product_id, p.name, p.category, p.image as image_url,
              SUM(oi.quantity) as units_sold,
              SUM(oi.quantity * oi.price) as revenue,
-             p.price, p.cost, p.stock_qty, p.low_stock_threshold
+             p.price, p.cost, p.stock_qty, p.low_stock_threshold, p.is_active, p.slug
       FROM public.order_items oi
       JOIN public.products p ON p.slug = oi.product_slug
       JOIN public.orders o ON o.id = oi.order_id
       WHERE o.status NOT IN ('cancelled') AND o.${dateFilter}
-      GROUP BY p.id, p.name, p.category, p.image, p.price, p.cost, p.stock_qty, p.low_stock_threshold
+      GROUP BY p.id, p.name, p.category, p.image, p.price, p.cost, p.stock_qty, p.low_stock_threshold, p.is_active, p.slug
       ORDER BY revenue DESC
       LIMIT 10
     `);
@@ -213,7 +213,7 @@ export async function GET(request: Request) {
 
     // 18. All Inventory (Low Stock indicators)
     const inventoryRes = await client.query(`
-      SELECT id, name, category, price, cost, stock_qty, low_stock_threshold, image
+      SELECT id, name, category, price, cost, stock_qty, low_stock_threshold, image, is_active, slug
       FROM public.products
       ORDER BY stock_qty ASC
     `);
@@ -278,7 +278,9 @@ export async function GET(request: Request) {
           cost: Number(r.cost),
           margin: r.price > 0 ? ((r.price - r.cost) / r.price) * 100 : 0,
           stock_qty: Number(r.stock_qty),
-          low_stock_threshold: Number(r.low_stock_threshold)
+          low_stock_threshold: Number(r.low_stock_threshold),
+          is_active: r.is_active,
+          slug: r.slug
         })),
         topCities: topCitiesRes.rows.map(r => ({
           city: r.city,
@@ -317,7 +319,9 @@ export async function GET(request: Request) {
           cost: Number(r.cost),
           stock_qty: Number(r.stock_qty),
           low_stock_threshold: Number(r.low_stock_threshold),
-          image_url: r.image
+          image_url: r.image,
+          is_active: r.is_active,
+          slug: r.slug
         })),
         allOrders: allOrdersRes.rows
       }

@@ -20,10 +20,14 @@ export default function ProductsTab({ data }: ProductsTabProps) {
   const [mounted, setMounted] = useState(false);
   const [sortField, setSortField] = useState<'units_sold' | 'revenue' | 'margin'>('revenue');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [productList, setProductList] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (data && data.topProducts) {
+      setProductList(data.topProducts);
+    }
+  }, [data]);
 
   if (!mounted) {
     return <div className="h-[600px] w-full bg-slate-50/5 animate-pulse rounded-3xl" />;
@@ -42,9 +46,51 @@ export default function ProductsTab({ data }: ProductsTabProps) {
     }
   };
 
+  const handleToggleActive = async (slug: string, currentActive: boolean) => {
+    const updated = productList.map(p => p.slug === slug ? { ...p, is_active: !currentActive } : p);
+    setProductList(updated);
+
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, is_active: !currentActive })
+      });
+      const result = await res.json();
+      if (!result.success) {
+        alert("Failed to toggle status: " + result.error);
+        setProductList(productList);
+      }
+    } catch (err) {
+      console.error(err);
+      setProductList(productList);
+    }
+  };
+
+  const handleUpdateStock = async (slug: string, newQty: number) => {
+    if (newQty < 0) return;
+    const updated = productList.map(p => p.slug === slug ? { ...p, stock_qty: newQty } : p);
+    setProductList(updated);
+
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, stock_qty: newQty })
+      });
+      const result = await res.json();
+      if (!result.success) {
+        alert("Failed to update stock: " + result.error);
+        setProductList(productList);
+      }
+    } catch (err) {
+      console.error(err);
+      setProductList(productList);
+    }
+  };
+
   // Process products list
-  const rawProducts = data.topProducts || [];
-  const sortedProducts = [...rawProducts].sort((a: any, b: any) => {
+  const sortedProducts = [...productList].sort((a: any, b: any) => {
     let aVal = a[sortField];
     let bVal = b[sortField];
     if (sortOrder === 'asc') return aVal - bVal;
@@ -52,15 +98,15 @@ export default function ProductsTab({ data }: ProductsTabProps) {
   });
 
   // Calculate stagnant products (stock > 40 and revenue < €300)
-  const stagnantProducts = rawProducts
+  const stagnantProducts = productList
     .filter((p: any) => p.stock_qty > 35 && p.revenue < 600)
     .sort((a: any, b: any) => b.stock_qty - a.stock_qty);
 
   // Stock alert levels count
-  const lowStockProducts = rawProducts.filter((p: any) => p.stock_qty <= p.low_stock_threshold);
+  const lowStockProducts = productList.filter((p: any) => p.stock_qty <= p.low_stock_threshold);
 
   // Donut chart revenue share data
-  const revenueShareData = rawProducts.slice(0, 8).map((p: any) => ({
+  const revenueShareData = productList.slice(0, 8).map((p: any) => ({
     name: p.name,
     value: p.revenue
   }));
@@ -75,7 +121,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Catalog Size</span>
-            <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">{rawProducts.length} items</span>
+            <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">{productList.length} items</span>
           </div>
         </div>
 
@@ -96,7 +142,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
           <div className="flex flex-col">
             <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Out of Stock Vials</span>
             <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">
-              {rawProducts.filter((p: any) => p.stock_qty === 0).length} items
+              {productList.filter((p: any) => p.stock_qty === 0).length} items
             </span>
           </div>
         </div>
@@ -108,7 +154,7 @@ export default function ProductsTab({ data }: ProductsTabProps) {
           <div className="flex flex-col">
             <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">Average Margin</span>
             <span className="font-display font-black text-xl text-ink leading-tight mt-0.5">
-              {(rawProducts.reduce((acc: number, curr: any) => acc + curr.margin, 0) / Math.max(1, rawProducts.length)).toFixed(1)}%
+              {(productList.reduce((acc: number, curr: any) => acc + curr.margin, 0) / Math.max(1, productList.length)).toFixed(1)}%
             </span>
           </div>
         </div>
@@ -147,7 +193,8 @@ export default function ProductsTab({ data }: ProductsTabProps) {
                     <ArrowUpDown className="w-3 h-3" />
                   </div>
                 </th>
-                <th className="pb-3 font-semibold text-center">Stock level</th>
+                <th className="pb-3 font-semibold text-center">Stock Adjustment</th>
+                <th className="pb-3 font-semibold text-center">Store Status</th>
                 <th className="pb-3 font-semibold text-center">Conv. Rate</th>
               </tr>
             </thead>
@@ -180,13 +227,34 @@ export default function ProductsTab({ data }: ProductsTabProps) {
                       {p.margin.toFixed(1)}%
                     </td>
                     <td className="py-3 text-center">
-                      <div className="flex flex-col items-center gap-1">
-                        <span className={`font-mono text-[10px] font-bold ${
-                          p.stock_qty <= p.low_stock_threshold ? 'text-red-500' : 'text-slate-600'
-                        }`}>
-                          {p.stock_qty} / 100
-                        </span>
-                        <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateStock(p.slug, p.stock_qty - 1)}
+                            className="w-5.5 h-5.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-650 hover:bg-slate-200 dark:hover:bg-slate-750 flex items-center justify-center font-bold text-xs shadow-sm"
+                            title="Remove 1"
+                          >
+                            −
+                          </button>
+                          
+                          <input
+                            type="number"
+                            className="w-10 text-center bg-transparent border-b border-slate-200 dark:border-slate-800 font-mono font-bold text-slate-800 text-xs focus:outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            value={p.stock_qty}
+                            onChange={(e) => handleUpdateStock(p.slug, Number(e.target.value))}
+                          />
+                          
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateStock(p.slug, p.stock_qty + 1)}
+                            className="w-5.5 h-5.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-650 hover:bg-slate-200 dark:hover:bg-slate-750 flex items-center justify-center font-bold text-xs shadow-sm"
+                            title="Add 1"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="w-16 h-1 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden">
                           <div 
                             className={`h-full rounded-full ${
                               p.stock_qty <= p.low_stock_threshold ? 'bg-red-500' : 'bg-blue-600'
@@ -195,6 +263,19 @@ export default function ProductsTab({ data }: ProductsTabProps) {
                           />
                         </div>
                       </div>
+                    </td>
+                    <td className="py-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleActive(p.slug, p.is_active)}
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+                          p.is_active 
+                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20' 
+                            : 'bg-rose-500/10 border-rose-500/20 text-rose-500 hover:bg-rose-500/20'
+                        }`}
+                      >
+                        {p.is_active ? 'Active' : 'Hidden'}
+                      </button>
                     </td>
                     <td className="py-3 text-center">
                       <span className="font-mono font-bold text-slate-800 bg-slate-100 dark:bg-slate-850 px-2 py-0.5 rounded text-[10px]">

@@ -936,7 +936,8 @@ export async function fetchProductsFromDb(): Promise<Product[]> {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('products')
-      .select('*');
+      .select('*')
+      .eq('is_active', true);
     
     if (error || !data || data.length === 0) {
       return products;
@@ -978,6 +979,7 @@ export async function fetchProductBySlug(slug: string): Promise<Product | undefi
       .from('products')
       .select('*')
       .eq('slug', slug)
+      .eq('is_active', true)
       .maybeSingle();
 
     if (error || !data) {
@@ -1020,6 +1022,7 @@ export async function fetchRelatedProducts(product: Product, count = 4): Promise
       .select('*')
       .neq('slug', product.slug)
       .eq('category', product.category)
+      .eq('is_active', true)
       .limit(count);
 
     if (error || !data || data.length === 0) {
