@@ -118,6 +118,40 @@ export async function POST(req: NextRequest) {
           } catch (mailErr: any) {
             console.error('[Resend Exception]: Failed to send mail:', mailErr.message);
           }
+
+          // 1.7. Optional Telegram Bot Notification Alert
+          try {
+            const botToken = process.env.TELEGRAM_BOT_TOKEN;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+            if (botToken && chatId) {
+              const orderSummary = lines.map(l => `${l.qty}x ${l.slug}`).join(', ');
+              const text = `🔔 *New X-Med Order!*\n\n` +
+                `👤 *Name:* ${customer.name}\n` +
+                `✉️ *Email:* ${customer.email}\n` +
+                `📍 *Location:* ${customer.city}, ${customer.country}\n` +
+                `💰 *Total:* €${amount.toFixed(2)}\n` +
+                `📦 *Items:* ${orderSummary}\n` +
+                `💬 *WhatsApp:* ${customer.phone || 'N/A'}`;
+              
+              const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  chat_id: chatId,
+                  text: text,
+                  parse_mode: 'Markdown'
+                })
+              });
+              if (!tgRes.ok) {
+                const tgErrText = await tgRes.text();
+                console.error('[Telegram API Error]:', tgErrText);
+              } else {
+                console.log('[Telegram] Notification alert sent successfully.');
+              }
+            }
+          } catch (tgErr: any) {
+            console.error('[Telegram Exception]: Failed to send alert:', tgErr.message);
+          }
         }
       }
     }
