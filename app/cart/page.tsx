@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/cart-context';
-import { getProductBySlug } from '@/lib/products';
-import { Trash2, ArrowLeft, ShoppingBag, Sparkles, ShieldAlert } from 'lucide-react';
+import { products, getProductBySlug } from '@/lib/products';
+import { Trash2, ArrowLeft, ShoppingBag, Sparkles, ShieldAlert, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
-  const { lines, setQty, removeItem, subtotal, discount, total } = useCart();
+  const { lines, setQty, removeItem, subtotal, discount, total, addItem } = useCart();
 
   if (lines.length === 0) {
     return (
@@ -195,6 +195,57 @@ export default function CartPage() {
             </Link>
           </div>
         </div>
+
+        {/* Recommendations Section */}
+        {lines.length > 0 && (
+          <div className="mt-14 border-t border-slate-200/50 pt-10">
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles className="w-5 h-5 text-blue-650" />
+              <h2 className="font-display text-xl font-bold text-ink">You Can Also Buy This</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {products
+                .filter(p => !lines.map(l => l.slug).includes(p.slug))
+                .slice(0, 3)
+                .map((p) => (
+                  <div 
+                    key={p.slug} 
+                    className="glass-static glass-noise p-4 flex flex-col justify-between rounded-2xl border-white/60 bg-white/50 shadow-glass"
+                  >
+                    <div className="flex gap-3 items-center">
+                      <div className="w-14 h-14 bg-white border border-slate-100 rounded-xl relative overflow-hidden flex-shrink-0">
+                        <Image 
+                          src={p.image} 
+                          alt={p.name} 
+                          fill 
+                          className="object-cover" 
+                          sizes="60px"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-display font-bold text-xs text-ink truncate leading-tight">
+                          {p.name}
+                        </h3>
+                        <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
+                          {p.strength} · €{p.price.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() => addItem(p.slug, 1)}
+                      className="btn-gradient w-full h-9 mt-4 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                      Add to Cart
+                    </button>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
