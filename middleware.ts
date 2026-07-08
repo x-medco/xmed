@@ -3,29 +3,76 @@ import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hostname = request.headers.get('host') || '';
 
-  // 1. ADMIN PANEL ROUTE PROTECTION
-  if (pathname.startsWith('/admin')) {
-    // Allow admin login page and API calls
-    if (pathname === '/admin/login') {
+  // Define admin subdomain conditions (supports localhost for local testing)
+  const isAdminSubdomain = hostname.startsWith('admin.x-med.co') || hostname.startsWith('admin.localhost:3000');
+
+  // ==========================================
+  // A. ADMIN SUBDOMAIN ROUTING CONTROL
+  // ==========================================
+  if (isAdminSubdomain) {
+    // Allow static files, assets, images and API routes to load normally
+    const isAssetOrApi = 
+      pathname.startsWith('/api') || 
+      pathname.startsWith('/_next') || 
+      pathname.includes('.');
+      
+    if (isAssetOrApi) {
       return NextResponse.next();
     }
-    
-    const adminAuth = request.cookies.get('admin_auth')?.value;
-    if (adminAuth !== 'true') {
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
+
+    // Root mapping (admin.x-med.co/)
+    if (pathname === '/') {
+      const adminAuth = request.cookies.get('admin_auth')?.value;
+      if (adminAuth !== 'true') {
+        // Rewrite to login page internally to keep clean subdomain URL structure
+        return NextResponse.rewrite(new URL('/admin/login', request.url));
+      }
+      return NextResponse.rewrite(new URL('/admin', request.url));
     }
-    return NextResponse.next();
+
+    // Login page mapping (admin.x-med.co/login)
+    if (pathname === '/login') {
+      return NextResponse.rewrite(new URL('/admin/login', request.url));
+    }
+
+    // Handle standard /admin paths, enforcing auth rules
+    if (pathname.startsWith('/admin')) {
+      if (pathname === '/admin/login') {
+        return NextResponse.next();
+      }
+      const adminAuth = request.cookies.get('admin_auth')?.value;
+      if (adminAuth !== 'true') {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    // Strict isolation: Block access to customer storefront pages on admin subdomain
+    // Redirect customer pages (like /products, /cart, /checkout) back to dashboard root
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // 2. MAINTENANCE MODE GUARD FOR PUBLIC PAGES
-  // Ignore API routes, Next.js internal files, assets, static assets, and admin console
+  // ==========================================
+  // B. MAIN STOREFRONT DOMAIN ROUTING CONTROL
+  // ==========================================
+  
+  // Enforce redirection from /admin subpaths to the dedicated admin subdomain
+  if (pathname.startsWith('/admin')) {
+    const protocol = request.nextUrl.protocol;
+    const targetSubdomain = hostname.startsWith('localhost:3000') 
+      ? 'admin.localhost:3000' 
+      : 'admin.x-med.co';
+      
+    return NextResponse.redirect(`${protocol}//${targetSubdomain}/login`);
+  }
+
+  // MAINTENANCE MODE GUARD FOR PUBLIC PAGES
   const isPublicPage = 
     !pathname.startsWith('/api') && 
     !pathname.startsWith('/_next') && 
-    !pathname.startsWith('/admin') &&
-    !pathname.includes('.') && // ignore file requests (.png, .jpg, .ico, etc)
+    !pathname.includes('.') && 
     pathname !== '/maintenance';
 
   if (isPublicPage) {
@@ -47,14 +94,12 @@ export async function middleware(request: NextRequest) {
         const isMaintenance = data[0]?.value === 'true';
 
         if (isMaintenance) {
-          // Rewrite internally to the maintenance screen without changing the URL
           const maintenanceUrl = new URL('/maintenance', request.url);
           return NextResponse.rewrite(maintenanceUrl);
         }
       }
     } catch (err) {
       console.error("Maintenance middleware check failed:", err);
-      // Fail-open: keep site active if check fails
     }
   }
 
