@@ -119,7 +119,7 @@ export const products: Product[] = [
   },
   {
     slug: 'bpc-157-5mg',
-    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG3_baweau.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369834/xmed27_ou6g8b.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -153,7 +153,7 @@ export const products: Product[] = [
   },
   {
     slug: 'tb-500-10mg',
-    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG2_ya70n7.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369827/xmed26_xjvze2.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -655,7 +655,7 @@ export const products: Product[] = [
   },
   {
     slug: 'retatrutide-5mg',
-    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369836/xmed12_pzkuwz.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
@@ -687,7 +687,7 @@ export const products: Product[] = [
   },
   {
     slug: 'retatrutide-10mg',
-    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783428786/xmedBG1_n3aodq.png',
+    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783369833/xmed11_hfuhpe.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
