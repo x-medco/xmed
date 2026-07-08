@@ -78,14 +78,18 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
     };
   }, []);
 
-  /* 16 Featured products to display on home page */
-  const featuredProducts = products.slice(0, 16);
-  const featuredLabels = [
-    'Body Protection Compound 157', 
-    'Growth Hormone Releasing Peptide', 
-    'Thymosin Beta-4', 
-    'Copper Peptide'
+  /* Best Seller products to display on home page */
+  const bestSellerSlugs = [
+    'bpc-157-5mg',
+    'tb-500-10mg',
+    'retatrutide-10mg-quick-pen',
+    'retatrutide-10mg',
+    'tirzepatide-5mg',
+    'ghk-cu-50mg',
+    'nad-500mg',
+    '5-amino-1mq-50mg'
   ];
+  const featuredProducts = products.filter(p => bestSellerSlugs.includes(p.slug));
 
   /* Process timeline scroll progress */
   const timelineRef = useRef(null);
@@ -187,9 +191,9 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
         <div className="mx-auto max-w-7xl px-6">
           <motion.div variants={fadeUp} className="flex items-end justify-between mb-12">
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase gradient-text">Featured Peptides</span>
+              <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase gradient-text">Best Sellers</span>
               <h2 className="font-display text-3xl md:text-4xl font-black text-ink tracking-tight">
-                Our Most Popular Research Peptides
+                Our Top Selling Research Peptides
               </h2>
             </div>
             <Link href="/products" className="hidden md:flex btn-glass h-10 px-5 text-xs font-bold text-ink/70">
@@ -197,17 +201,17 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
             </Link>
           </motion.div>
 
-          {/* Responsive grid displaying minimum 16 items */}
-          <motion.div variants={staggerContainer} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((p, idx) => (
+          {/* Responsive grid displaying best seller items */}
+          <motion.div variants={staggerContainer} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            {featuredProducts.map((p) => (
               <motion.div key={p.slug} variants={fadeUp} className="h-full flex">
                 <Link
                   href={`/products/${p.slug}`}
                   className="glass glass-noise group flex flex-col w-full overflow-hidden rounded-3xl"
                 >
                   <div className="relative z-10 flex flex-col h-full">
-                    {/* Image - Taller (h-72), covers the entire top section of the card edge to edge with rounded corners */}
-                    <div className="w-full h-72 relative overflow-hidden rounded-t-[24px]">
+                    {/* Image - Responsive height, covers top section of the card */}
+                    <div className="w-full h-44 sm:h-56 md:h-64 lg:h-72 relative overflow-hidden rounded-t-[24px]">
                       <Image 
                         src={p.image} 
                         alt={p.name} 
@@ -217,51 +221,51 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
                     </div>
 
                     {/* Info Section */}
-                    <div className="px-5 pb-5 pt-4 flex flex-col flex-1">
+                    <div className="px-3 pb-3 pt-3 sm:px-5 sm:pb-5 sm:pt-4 flex flex-col flex-1">
                       <div className="flex-1 min-w-0">
                         {/* Strength Row */}
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[10px] font-mono font-bold tracking-wider bg-blue-500/10 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-500/20">
+                          <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-wider bg-blue-500/10 text-blue-700 px-2 py-0.5 sm:px-2.5 rounded-full border border-blue-500/20">
                             {p.strength}
                           </span>
                         </div>
 
                         {/* Title */}
-                        <h3 className="font-display font-black text-xl text-ink leading-tight mb-2 tracking-tight group-hover:text-blue-600 transition-colors">
+                        <h3 className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl text-ink leading-tight mb-1.5 tracking-tight group-hover:text-blue-600 transition-colors">
                           {p.name}
                         </h3>
 
                         {/* Label/Description */}
-                        <p className="text-[11px] text-graphite/70 leading-relaxed mb-3 line-clamp-2">
-                          {featuredLabels[idx] || p.shortDescription}
+                        <p className="text-[10px] sm:text-[11px] text-graphite/70 leading-relaxed mb-2.5 line-clamp-2">
+                          {p.shortDescription}
                         </p>
 
                         {/* Lab warning bar */}
-                        <div className="mb-4 bg-red-500/5 border border-red-500/10 rounded-lg p-2 text-center">
-                          <span className="text-[9px] text-red-600 font-mono font-semibold uppercase tracking-wider block leading-tight">
+                        <div className="mb-2 sm:mb-4 bg-red-500/5 border border-red-500/10 rounded-lg p-1 sm:p-2 text-center">
+                          <span className="text-[8px] sm:text-[9px] text-red-600 font-mono font-semibold uppercase tracking-wider block leading-tight">
                             Chemical Compound: research & laboratory use only
                           </span>
                         </div>
                       </div>
 
                       {/* Price & Action Button */}
-                      <div className="mt-auto pt-2 flex flex-col gap-2.5">
+                      <div className="mt-auto pt-1 sm:pt-2 flex flex-col gap-2 sm:gap-2.5">
                         <div className="flex items-center justify-between px-1">
                           <div className="flex items-baseline gap-2">
-                            <span className="font-mono text-ink font-bold text-lg">
+                            <span className="font-mono text-ink font-bold text-sm sm:text-base md:text-lg">
                               €{p.price.toFixed(2)}
                             </span>
                             {p.compareAtPrice && (
-                              <span className="font-mono text-slate-400 line-through text-xs">
+                              <span className="font-mono text-slate-400 line-through text-[10px] sm:text-xs">
                                 €{p.compareAtPrice.toFixed(2)}
                               </span>
                             )}
                           </div>
                         </div>
 
-                        <div className="w-full btn-gradient py-2.5 px-4 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 group-hover:from-blue-500 group-hover:to-violet-500 transition-all shadow-md group-hover:shadow-lg">
+                        <div className="w-full btn-gradient py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-[10px] sm:text-xs font-bold text-white flex items-center justify-center gap-1.5 sm:gap-2 group-hover:from-blue-500 group-hover:to-violet-500 transition-all shadow-md group-hover:shadow-lg">
                           <span>View Compound</span>
-                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>
