@@ -225,7 +225,7 @@ export const emailAutomations: EmailTemplate[] = [
         <table class="product-table">
           <tr>
             <td style="width: 90px;">
-              <img src="${vars.image || 'https://res.cloudinary.com/tedfhije/image/upload/v1783443781/xmed.co_qw2ulu.png'}" class="product-img" alt="Reagent" />
+              <img src="${vars.image || 'https://res.cloudinary.com/tedfhije/image/upload/v1783369834/xmed27_ou6g8b.png'}" class="product-img" alt="Reagent" />
             </td>
             <td>
               <h4 class="product-name">${vars.productName || 'BPC-157'}</h4>
@@ -484,7 +484,7 @@ export const emailAutomations: EmailTemplate[] = [
         <table class="product-table">
           <tr>
             <td style="width: 90px;">
-              <img src="https://res.cloudinary.com/tedfhije/image/upload/v1783443542/1_tkluia.png" class="product-img" alt="TB-500" />
+              <img src="https://res.cloudinary.com/tedfhije/image/upload/v1783369827/xmed26_xjvze2.png" class="product-img" alt="TB-500" />
             </td>
             <td>
               <h4 class="product-name">TB-500 (Thymosin Beta-4)</h4>

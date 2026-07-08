@@ -186,7 +186,7 @@ export const products: Product[] = [
   },
   {
     slug: 'hgh-frag-5mg',
-    image: 'https://res.cloudinary.com/tedfhije/image/upload/v1783443542/2_yqdbhg.png',
+    image: '/images/xmed25.png',
     bogo: true,
     specifications: {
       purity: '99.2% - 99.8% (HPLC verified)',
