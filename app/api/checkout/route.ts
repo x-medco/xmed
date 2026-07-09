@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
                     resend_id: resendId
                   });
 
-                // 1.6. Send plain-text new order alert email to sales@x-med.co
+                // 1.6. Send plain-text new order alert email to info@x-med.co
                 try {
                   const notificationSubject = `[New Order Alert] Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
                   const notificationText = 
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
                     `Items Ordered:\n` +
                     `${productSummaryStr}\n`;
 
-                  // Send to sales mailbox via Resend
+                  // Send to info mailbox via Resend
                   await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
@@ -160,8 +160,8 @@ export async function POST(req: NextRequest) {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      from: 'X-Med Storefront <sales@x-med.co>',
-                      to: ['sales@x-med.co'],
+                      from: 'X-Med Storefront <info@x-med.co>',
+                      to: ['info@x-med.co'],
                       subject: notificationSubject,
                       text: notificationText
                     })
@@ -172,8 +172,8 @@ export async function POST(req: NextRequest) {
                   await supabaseServer
                     .from('emails')
                     .insert({
-                      sender: 'X-Med Storefront <sales@x-med.co>',
-                      recipient: 'sales@x-med.co',
+                      sender: 'X-Med Storefront <info@x-med.co>',
+                      recipient: 'info@x-med.co',
                       subject: notificationSubject,
                       text_content: notificationText,
                       direction: 'incoming',
