@@ -1299,6 +1299,147 @@ export const products: Product[] = [
         "a": "It acts as a preservative, inhibiting bacterial growth so a reconstituted vial can be used more than once in the lab."
       }
     ]
+  },
+  {
+    "slug": "glutathione-1200mg",
+    "name": "Glutathione",
+    "category": "Longevity & Cellular Health",
+    "strength": "1200mg/10ml",
+    "format": "vial",
+    "price": 45,
+    "includesWater": false,
+    "shortDescription": "X-Med Glutathione Injection is a sterile injectable formulation containing 1200mg Glutathione per 10ml vial. Designed for intravenous use only.",
+    "longDescription": [
+      "Glutationa Injetável 1200 mg/10 mL. A Glutationa é um dos principais antioxidantes produzidos naturalmente pelo organismo, desempenhando um papel essencial na proteção das células contra o estresse oxidativo e no suporte às funções metabólicas. Sua forma injetável é utilizada por profissionais de saúde em protocolos específicos, conforme avaliação clínica.",
+      "X-Med Glutathione Injection 1200mg/10ml is a professional-grade sterile injectable solution formulated with Glutathione 120mg/ml. Each 10ml vial contains a total of 1200mg Glutathione, making it suitable for clinical and professional medical use where glutathione supplementation is prescribed.",
+      "The product comes in a premium sealed vial with clear dosage information, sterile preparation, and professional packaging. It is intended for intravenous use only and must be handled and administered by trained medical personnel."
+    ],
+    "highlights": [
+      "1200mg Glutathione per 10ml vial",
+      "Sterile injectable solution",
+      "Intravenous use only",
+      "Professional-grade formulation"
+    ],
+    "keywords": [
+      "glutathione",
+      "glutathione injection",
+      "glutathione 1200mg",
+      "antioxidant injection"
+    ],
+    "metaTitle": "Glutathione Injection 1200mg/10ml | X-Med",
+    "metaDescription": "Buy sterile Glutathione Injection 1200mg/10ml for clinical and professional use. High quality, sterile preparation, secure shipping.",
+    "faqs": [
+      {
+        "q": "What is Glutathione?",
+        "a": "Glutathione is a powerful antioxidant naturally produced in the liver that helps protect cells from oxidative stress and supports liver detoxification."
+      },
+      {
+        "q": "How should this product be administered?",
+        "a": "It is designed for intravenous (IV) use only and must be administered strictly under the supervision of a qualified healthcare professional."
+      }
+    ],
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct1_o0r9an.png",
+    "bogo": false,
+    "specifications": {
+      "purity": "Sterile formulation",
+      "storage": "Store at 2-8°C, protect from light",
+      "dosage": "As directed by healthcare professional",
+      "usage": "Intravenous use only"
+    }
+  },
+  {
+    "slug": "pt-141-bremelanotide-10mg",
+    "name": "PT-141 Bremelanotide",
+    "category": "Sexual Wellness Research",
+    "strength": "10mg",
+    "format": "vial",
+    "price": 25,
+    "includesWater": true,
+    "shortDescription": "PT-141 Bremelanotide is a research-grade peptide product supplied in a sealed vial for laboratory research purposes only.",
+    "longDescription": [
+      "PT-141 Bremelanotide is a peptide research product designed for laboratory-based study and professional research applications. The product is presented in a premium sealed vial with a clear blue-and-white label, making it suitable for research catalog listings, scientific product pages, and laboratory supply presentation.",
+      "This vial is labeled “For Laboratory Research”, meaning it should only be handled by qualified professionals in appropriate research settings. It is not intended for personal use, medical use, diagnosis, treatment, or consumption.",
+      "Important Note: This product is strictly for laboratory research purposes only. Not for human or animal use. Keep stored and handled according to professional laboratory guidelines."
+    ],
+    "highlights": [
+      "10mg research-grade peptide",
+      "Sealed research vial",
+      "For laboratory research use only",
+      "Lot Number: RN07156"
+    ],
+    "keywords": [
+      "pt-141",
+      "bremelanotide",
+      "pt-141 peptide",
+      "buy pt-141 bremelanotide"
+    ],
+    "metaTitle": "PT-141 Bremelanotide 10mg | Research Peptide — X-Med",
+    "metaDescription": "Buy PT-141 Bremelanotide 10mg for laboratory research. Third-party verified purity, secure packaging, discreet EU delivery.",
+    "faqs": [
+      {
+        "q": "What is PT-141 Bremelanotide studied for?",
+        "a": "It is studied as a melanocortin receptor agonist, primarily in sexual wellness and libido research models."
+      },
+      {
+        "q": "Is this product for human use?",
+        "a": "No. This product is strictly for laboratory and in-vitro research use, not for human or animal consumption."
+      }
+    ],
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct2_yg0wr9.png",
+    "bogo": false,
+    "specifications": {
+      "purity": "99% HPLC verified",
+      "storage": "Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)",
+      "dosage": "Research dependent",
+      "usage": "Laboratory research only"
+    }
+  },
+  {
+    "slug": "l-carnitine-500mg-ml",
+    "name": "L-Carnitine",
+    "category": "Weight Management",
+    "strength": "500mg/ml",
+    "format": "vial",
+    "price": 35,
+    "includesWater": false,
+    "shortDescription": "X-Med L-Carnitine Injection is a sterile injectable formulation containing 500mg/ml L-Carnitine in a 10ml vial. Intramuscular use only.",
+    "longDescription": [
+      "L-Carnitina 500 mg/mL. A L-Carnitina é um composto naturalmente presente no organismo que participa do metabolismo energético, auxiliando no transporte de ácidos graxos para serem utilizados como fonte de energia. Quando associada a uma alimentação equilibrada e à prática regular de exercícios físicos, pode contribuir para o desempenho durante os treinos e apoiar um estilo de vida saudável.",
+      "X-Med L-Carnitine Injection 500mg/ml is a professional-grade sterile injectable solution formulated with L-Carnitine. Each vial contains 10ml of solution, with a concentration of 500mg per ml, making it suitable for clinical or professional use where L-Carnitine injection is prescribed.",
+      "The product is supplied in a sealed glass vial with clear dosage and batch information. Its premium medical-style packaging makes it suitable for professional product listings, pharmaceutical catalogs, and healthcare supply presentation."
+    ],
+    "highlights": [
+      "500mg/ml L-Carnitine concentration",
+      "10ml sterile glass vial (5000mg total)",
+      "Intramuscular use only",
+      "Batch: XV809"
+    ],
+    "keywords": [
+      "l-carnitine",
+      "l-carnitine injection",
+      "carnitine 500mg/ml",
+      "weight loss injection"
+    ],
+    "metaTitle": "L-Carnitine Injection 500mg/ml | X-Med",
+    "metaDescription": "Buy premium L-Carnitine Injection 500mg/ml for clinical and weight management protocols. Sterile 10ml vials.",
+    "faqs": [
+      {
+        "q": "What is L-Carnitine studied for?",
+        "a": "L-Carnitine participates in fat metabolism by transporting fatty acids into mitochondria to be converted into energy."
+      },
+      {
+        "q": "How should this product be administered?",
+        "a": "It is designed for intramuscular (IM) use only and should be administered under professional medical supervision."
+      }
+    ],
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct3_v95s4k.png",
+    "bogo": false,
+    "specifications": {
+      "purity": "Sterile formulation",
+      "storage": "Store at 15-30°C, protect from freezing and light",
+      "dosage": "As directed by healthcare professional",
+      "usage": "Intramuscular use only"
+    }
   }
 ];
 
