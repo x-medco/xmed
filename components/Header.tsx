@@ -14,7 +14,10 @@ export default function Header() {
   const pathname = usePathname();
   const isAdminSubdomain = typeof window !== 'undefined' && 
     (window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('admin.localhost'));
-  if (pathname.startsWith('/admin') || isAdminSubdomain) {
+  const isMailSubdomain = typeof window !== 'undefined' && 
+    (window.location.hostname.startsWith('mail.') || window.location.hostname.startsWith('mail.localhost'));
+
+  if (pathname.startsWith('/admin') || pathname.startsWith('/mail') || isAdminSubdomain || isMailSubdomain) {
     return null;
   }
   const [scrolled, setScrolled] = useState(false);

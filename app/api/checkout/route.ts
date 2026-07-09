@@ -91,6 +91,9 @@ export async function POST(req: NextRequest) {
                   trackingNumber: 'Pending WhatsApp Payment Setup'
                 });
 
+                const fromAddress = 'X-Med Reagents <sales@x-med.co>';
+                const emailSubject = `Order Confirmed: Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
+
                 const emailResponse = await fetch('https://api.resend.com/emails', {
                   method: 'POST',
                   headers: {
@@ -98,19 +101,38 @@ export async function POST(req: NextRequest) {
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
-                    from: 'X-Med Reagents <sales@x-med.co>',
+                    from: fromAddress,
                     to: [customer.email],
-                    subject: `Order Confirmed: Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`,
+                    subject: emailSubject,
                     html: html
                   })
                 });
 
+                let resendId = null;
+                let status = 'failed';
                 if (!emailResponse.ok) {
                   const errText = await emailResponse.text();
                   console.error('[Resend API Error]:', errText);
                 } else {
+                  const resendData = await emailResponse.json();
+                  resendId = resendData.id;
+                  status = 'sent';
                   console.log(`[Resend] Order confirmation email sent successfully.`);
                 }
+
+                // Save a copy of the transactional email in the database
+                await supabaseServer
+                  .from('emails')
+                  .insert({
+                    sender: fromAddress,
+                    recipient: customer.email,
+                    subject: emailSubject,
+                    html_content: html,
+                    text_content: `Order confirmation for ${customer.name}. Total amount: €${amount.toFixed(2)}. Items: ${productSummaryStr}`,
+                    direction: 'outgoing',
+                    status: status,
+                    resend_id: resendId
+                  });
               }
             } else {
               console.warn('[Resend] Warning: RESEND_API_KEY environment variable is not defined.');
