@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, Users, ShoppingBag, Euro, Compass, 
   Package, ShoppingCart, Settings, RefreshCw, BarChart2, Mail, LogOut,
-  Menu, X, Sun, Moon
+  Menu, X, Sun, Moon, Send
 } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
 import OverviewTab from '@/components/admin/OverviewTab';
@@ -17,6 +17,7 @@ import InventoryTab from '@/components/admin/InventoryTab';
 import OrdersTab from '@/components/admin/OrdersTab';
 import SettingsTab from '@/components/admin/SettingsTab';
 import AutomationsTab from '@/components/admin/AutomationsTab';
+import EmailLogsTab from '@/components/admin/EmailLogsTab';
 
 const tabs = [
   { id: 'overview', name: 'Overview', icon: LayoutDashboard },
@@ -28,6 +29,7 @@ const tabs = [
   { id: 'inventory', name: 'Inventory', icon: Package },
   { id: 'orders', name: 'Orders', icon: BarChart2 },
   { id: 'automations', name: 'Email Automations', icon: Mail },
+  { id: 'marketing-emails', name: 'Email Delivery Logs', icon: Send },
   { id: 'settings', name: 'Settings', icon: Settings }
 ];
 
@@ -149,6 +151,8 @@ export default function AdminPage() {
         return <OrdersTab data={dashboardData} />;
       case 'automations':
         return <AutomationsTab />;
+      case 'marketing-emails':
+        return <EmailLogsTab />;
       case 'settings':
         return <SettingsTab />;
       default:
@@ -379,6 +383,7 @@ export default function AdminPage() {
                 { id: 'customers', name: 'Customers Log', icon: ShoppingCart },
                 { id: 'traffic', name: 'Traffic & SEO', icon: Compass },
                 { id: 'inventory', name: 'Stock Levels', icon: Package },
+                { id: 'marketing-emails', name: 'Email Logs', icon: Send },
                 { id: 'settings', name: 'Settings Control', icon: Settings }
               ].map((tab) => {
                 const IconComp = tab.icon;

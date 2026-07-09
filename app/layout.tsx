@@ -7,6 +7,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { siteConfig } from '@/lib/products';
+import { Suspense } from 'react';
+import PageTracker from '@/components/PageTracker';
 
 const display = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['500', '600', '700', '800'] });
 const body = Inter({ subsets: ['latin'], variable: '--font-body', weight: ['400', '500', '600'] });
@@ -37,6 +39,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body antialiased transition-colors duration-250">
         <ThemeProvider>
           <CartProvider>
+            <Suspense fallback={null}>
+              <PageTracker />
+            </Suspense>
             <AnimatedBackground />
             <Header />
             <main>{children}</main>
