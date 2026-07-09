@@ -133,6 +133,56 @@ export async function POST(req: NextRequest) {
                     status: status,
                     resend_id: resendId
                   });
+
+                // 1.6. Send plain-text new order alert email to sales@x-med.co
+                try {
+                  const notificationSubject = `[New Order Alert] Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
+                  const notificationText = 
+                    `New Order Received!\n\n` +
+                    `Invoice ID: #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}\n` +
+                    `Customer Name: ${customer.name}\n` +
+                    `Email: ${customer.email}\n` +
+                    `WhatsApp: ${customer.phone || 'N/A'}\n` +
+                    `Total Amount: €${amount.toFixed(2)}\n\n` +
+                    `Shipping Details:\n` +
+                    `Address: ${customer.address}\n` +
+                    `City: ${customer.city}\n` +
+                    `Postcode: ${customer.postcode}\n` +
+                    `Country: ${customer.country}\n\n` +
+                    `Items Ordered:\n` +
+                    `${productSummaryStr}\n`;
+
+                  // Send to sales mailbox via Resend
+                  await fetch('https://api.resend.com/emails', {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${resendApiKey}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      from: 'X-Med Storefront <sales@x-med.co>',
+                      to: ['sales@x-med.co'],
+                      subject: notificationSubject,
+                      text: notificationText
+                    })
+                  });
+                  console.log(`[Resend] Admin notification email sent successfully.`);
+
+                  // Insert directly into DB as incoming message to bypass webhook latency
+                  await supabaseServer
+                    .from('emails')
+                    .insert({
+                      sender: 'X-Med Storefront <sales@x-med.co>',
+                      recipient: 'sales@x-med.co',
+                      subject: notificationSubject,
+                      text_content: notificationText,
+                      direction: 'incoming',
+                      status: 'unread'
+                    });
+                  console.log(`[DB] Logged incoming admin notification alert.`);
+                } catch (adminMailErr: any) {
+                  console.error('[Resend Exception]: Failed to send admin notification email:', adminMailErr.message);
+                }
               }
             } else {
               console.warn('[Resend] Warning: RESEND_API_KEY environment variable is not defined.');
