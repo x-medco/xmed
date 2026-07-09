@@ -53,7 +53,7 @@ export const categories = [
 export const products: Product[] = [
   {
     "slug": "5-amino-1mq-50mg",
-    "image": "/images/xmed8.png",
+    "image": "/images/xmed28.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -445,7 +445,7 @@ export const products: Product[] = [
   },
   {
     "slug": "ss-31-50mg",
-    "image": "/images/xmed22.png",
+    "image": "/images/xmed21.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -539,7 +539,7 @@ export const products: Product[] = [
   },
   {
     "slug": "cjc-1295-no-dac-5mg",
-    "image": "/images/xmed15.png",
+    "image": "/images/xmed20.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -582,7 +582,7 @@ export const products: Product[] = [
   },
   {
     "slug": "melanotan-2-10mg",
-    "image": "/images/xmed16.png",
+    "image": "/images/xmed19.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -625,7 +625,7 @@ export const products: Product[] = [
   },
   {
     "slug": "igf-1-lr3-1mg",
-    "image": "/images/xmed17.png",
+    "image": "/images/xmed18.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -711,7 +711,7 @@ export const products: Product[] = [
   },
   {
     "slug": "igf-des-2mg",
-    "image": "/images/xmed18.png",
+    "image": "/images/xmed17.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -753,7 +753,7 @@ export const products: Product[] = [
   },
   {
     "slug": "dsip-5mg",
-    "image": "/images/xmed19.png",
+    "image": "/images/xmed29.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -796,7 +796,7 @@ export const products: Product[] = [
   },
   {
     "slug": "selank-5mg",
-    "image": "/images/xmed20.png",
+    "image": "/images/xmed15.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -882,7 +882,7 @@ export const products: Product[] = [
   },
   {
     "slug": "ghk-cu-50mg",
-    "image": "/images/xmed22.png",
+    "image": "/images/xmed13.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -1161,7 +1161,7 @@ export const products: Product[] = [
   },
   {
     "slug": "kpv-peptide-500mcg-30-pills",
-    "image": "/images/xmed28.png",
+    "image": "/images/xmed8.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
