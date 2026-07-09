@@ -492,7 +492,7 @@ export const products: Product[] = [
   },
   {
     "slug": "ipamorelin-5mg",
-    "image": "/images/xmed22.png",
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783573535/impamorline_ubmq9q.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
