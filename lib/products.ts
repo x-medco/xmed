@@ -838,49 +838,6 @@ export const products: Product[] = [
     ]
   },
   {
-    "slug": "pt-141-10mg",
-    "image": "/images/xmed14.png",
-    "bogo": false,
-    "specifications": {
-      "purity": "99.2% - 99.8% (HPLC verified)",
-      "storage": "Lyophilized: 2-8°C (Reconstituted: 2-8°C, use within 21 days)",
-      "dosage": "Research dependent",
-      "usage": "Chemical Compound: research & laboratory use only"
-    },
-    "name": "PT-141 (Bremelanotide)",
-    "category": "Sexual Wellness Research",
-    "strength": "10mg",
-    "format": "vial",
-    "price": 35,
-    "includesWater": true,
-    "shortDescription": "A melanocortin-receptor agonist derived from Melanotan 2, studied in research on central nervous system arousal pathways.",
-    "longDescription": [
-      "PT-141, also referenced as Bremelanotide, is a metabolite of Melanotan 2 studied for its action on melanocortin receptors in the central nervous system, distinct from the peripheral pigmentation pathways associated with its parent compound.",
-      "Supplied at 10mg, independently tested for identity and purity.",
-      "Shipped lyophilized, with a free bacteriostatic water vial included for lab reconstitution."
-    ],
-    "highlights": [
-      "10mg lyophilized vial",
-      "CNS melanocortin research compound",
-      "Purity tested",
-      "Free bacteriostatic water included"
-    ],
-    "keywords": [
-      "PT-141",
-      "Bremelanotide",
-      "PT-141 10mg",
-      "buy PT-141 research"
-    ],
-    "metaTitle": "PT-141 (Bremelanotide) 10mg | Research Peptide — X-Med",
-    "metaDescription": "PT-141 (Bremelanotide) 10mg for CNS melanocortin-receptor research. Purity tested, EU shipping.",
-    "faqs": [
-      {
-        "q": "How is PT-141 related to Melanotan 2?",
-        "a": "PT-141 is a metabolite of Melanotan 2, studied for central rather than peripheral melanocortin-receptor activity."
-      }
-    ]
-  },
-  {
     "slug": "ghk-cu-50mg",
     "image": "/images/xmed13.png",
     "bogo": false,
@@ -1353,7 +1310,7 @@ export const products: Product[] = [
     "category": "Sexual Wellness Research",
     "strength": "10mg",
     "format": "vial",
-    "price": 25,
+    "price": 35,
     "includesWater": true,
     "shortDescription": "PT-141 Bremelanotide is a research-grade peptide product supplied in a sealed vial for laboratory research purposes only.",
     "longDescription": [
@@ -1385,7 +1342,7 @@ export const products: Product[] = [
         "a": "No. This product is strictly for laboratory and in-vitro research use, not for human or animal consumption."
       }
     ],
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct2_yg0wr9.png",
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783573535/impamorline_ubmq9q.png",
     "bogo": false,
     "specifications": {
       "purity": "99% HPLC verified",
