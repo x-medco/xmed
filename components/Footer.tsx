@@ -153,6 +153,17 @@ export default function Footer() {
       <div className="border-t border-white/[0.04] bg-[#070e1a]">
         <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <span>© 2025 XMedLabs. All Rights Reserved.</span>
+          <span className="flex items-center gap-1.5">
+            Created with love &amp; 🎨 by{' '}
+            <a 
+              href="https://avadhbajaj.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-slate-400 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-[#ff6b6b] hover:via-[#ec52ce] hover:to-[#5f72ff] font-medium transition-all duration-300"
+            >
+              avadhbajaj
+            </a>
+          </span>
           <div className="flex items-center gap-6">
             <Link href="/terms" className="hover:text-white transition-colors">
               Terms &amp; Conditions
