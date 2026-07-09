@@ -1342,7 +1342,7 @@ export const products: Product[] = [
         "a": "No. This product is strictly for laboratory and in-vitro research use, not for human or animal consumption."
       }
     ],
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783573535/impamorline_ubmq9q.png",
+    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct2_yg0wr9.png",
     "bogo": false,
     "specifications": {
       "purity": "99% HPLC verified",
