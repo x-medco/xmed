@@ -17,10 +17,11 @@ import {
   CheckCircle, 
   AlertCircle, 
   X,
-  ArrowLeft
+  ArrowLeft,
+  Sun,
+  Moon
 } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
-
+import { useTheme } from '@/lib/theme-context';
 // Define TS Interfaces
 interface EmailAttachment {
   id?: string;
@@ -88,6 +89,7 @@ const DEFAULT_MOCK_EMAILS: Email[] = [
 ];
 
 export default function MailDashboard() {
+  const { theme, toggleTheme } = useTheme();
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
@@ -108,40 +110,43 @@ export default function MailDashboard() {
   const [notification, setNotification] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const supabase = getSupabaseClient();
-
+ 
   useEffect(() => {
     fetchEmails();
+    
+    // Register Service Worker for PWA Push Notifications
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          console.log('PWA Service Worker registered:', reg.scope);
+        })
+        .catch(err => {
+          console.warn('PWA Service Worker registration failed:', err);
+        });
+    }
   }, []);
-
+ 
   const fetchEmails = async () => {
     setLoading(true);
     try {
-      if (supabase && typeof supabase.from === 'function') {
-        const { data, error } = await supabase
-          .from('emails')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Error fetching from Supabase:', error);
-          setEmails(DEFAULT_MOCK_EMAILS);
-        } else if (data && data.length > 0) {
-          setEmails(data as Email[]);
-        } else {
-          setEmails(DEFAULT_MOCK_EMAILS);
-        }
+      const response = await fetch('/api/mail');
+      if (!response.ok) {
+        throw new Error('Failed to fetch mail history');
+      }
+      const data = await response.json();
+      if (data.success && data.emails && data.emails.length > 0) {
+        setEmails(data.emails as Email[]);
       } else {
         setEmails(DEFAULT_MOCK_EMAILS);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching emails:', e);
       setEmails(DEFAULT_MOCK_EMAILS);
     } finally {
       setLoading(false);
     }
   };
-
+ 
   const handleSelectEmail = async (email: Email) => {
     setSelectedEmail(email);
     
@@ -149,20 +154,21 @@ export default function MailDashboard() {
     if (email.status === 'unread') {
       setEmails(prev => prev.map(e => e.id === email.id ? { ...e, status: 'read' } : e));
       
-      // Update in Supabase
+      // Update in DB via API
       try {
-        if (supabase && typeof supabase.from === 'function' && !email.id.startsWith('mock-')) {
-          await supabase
-            .from('emails')
-            .update({ status: 'read' })
-            .eq('id', email.id);
+        if (!email.id.startsWith('mock-')) {
+          await fetch('/api/mail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: email.id, status: 'read' })
+          });
         }
       } catch (err) {
-        console.error('Failed to mark email as read in Supabase:', err);
+        console.error('Failed to mark email as read:', err);
       }
     }
   };
-
+ 
   const handleDeleteEmail = async (emailId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (selectedEmail?.id === emailId) {
@@ -171,16 +177,15 @@ export default function MailDashboard() {
     
     setEmails(prev => prev.filter(e => e.id !== emailId));
     showNotification('success', 'Email deleted.');
-
+ 
     try {
-      if (supabase && typeof supabase.from === 'function' && !emailId.startsWith('mock-')) {
-        await supabase
-          .from('emails')
-          .delete()
-          .eq('id', emailId);
+      if (!emailId.startsWith('mock-')) {
+        await fetch(`/api/mail?id=${emailId}`, {
+          method: 'DELETE'
+        });
       }
     } catch (err) {
-      console.error('Failed to delete email from Supabase:', err);
+      console.error('Failed to delete email:', err);
     }
   };
 
@@ -366,10 +371,10 @@ export default function MailDashboard() {
   const totalUnreadCount = getUnreadCount('all');
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-100 antialiased">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 antialiased">
       
       {/* 1. DESKTOP SIDEBAR (hidden on mobile) */}
-      <aside className="w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col justify-between select-none flex-shrink-0">
+      <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col justify-between select-none flex-shrink-0">
         <div>
           {/* Logo / Branding */}
           <div className="p-6 flex items-center gap-3">
@@ -377,15 +382,15 @@ export default function MailDashboard() {
               <Mail className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
             <div>
-              <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+              <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-slate-900 dark:from-white to-slate-650 dark:to-slate-400 bg-clip-text text-transparent">
                 XMed Mail
               </h1>
-              <span className="text-xs font-semibold text-emerald-400 uppercase tracking-widest">
+              <span className="text-xs font-semibold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest">
                 Workspace
               </span>
             </div>
           </div>
-
+ 
           {/* Compose Button */}
           <div className="px-4 mb-6">
             <button
@@ -396,15 +401,15 @@ export default function MailDashboard() {
               Compose
             </button>
           </div>
-
+ 
           {/* Mailboxes Navigation */}
           <nav className="px-2 space-y-1">
             <button
               onClick={() => { setActiveFolder('inbox'); setSelectedEmail(null); }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                 activeFolder === 'inbox' 
-                  ? 'bg-slate-800/80 text-emerald-400 shadow-inner' 
-                  : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'
+                  ? 'bg-slate-200/80 dark:bg-slate-800/80 text-emerald-600 dark:text-emerald-400 shadow-inner' 
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/40 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -417,13 +422,13 @@ export default function MailDashboard() {
                 </span>
               )}
             </button>
-
+ 
             <button
               onClick={() => { setActiveFolder('sent'); setSelectedEmail(null); }}
               className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                 activeFolder === 'sent' 
-                  ? 'bg-slate-800/80 text-emerald-400 shadow-inner' 
-                  : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'
+                  ? 'bg-slate-200/80 dark:bg-slate-800/80 text-emerald-600 dark:text-emerald-400 shadow-inner' 
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/40 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -432,10 +437,10 @@ export default function MailDashboard() {
               </div>
             </button>
           </nav>
-
+ 
           {/* Account Sub-filter section in Sidebar */}
           <div className="mt-8 px-4">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-3">
               Mailboxes
             </label>
             <div className="space-y-1">
@@ -452,13 +457,13 @@ export default function MailDashboard() {
                     onClick={() => { setSelectedAccount(acc.id as any); setSelectedEmail(null); }}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
                       selectedAccount === acc.id
-                        ? 'bg-slate-800 text-emerald-400 border border-slate-700/50'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850/50 border border-transparent'
+                        ? 'bg-slate-200 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 border border-slate-300/50 dark:border-slate-700/50'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-850/50 border border-transparent'
                     }`}
                   >
                     <span className="truncate">{acc.email}</span>
                     {count > 0 && (
-                      <span className="bg-slate-800 text-emerald-400 border border-emerald-500/20 font-bold text-[10px] px-1.5 py-0.2 rounded">
+                      <span className="bg-slate-100 dark:bg-slate-800 text-emerald-605 dark:text-emerald-400 border border-emerald-500/20 font-bold text-[10px] px-1.5 py-0.2 rounded">
                         {count}
                       </span>
                     )}
@@ -468,26 +473,39 @@ export default function MailDashboard() {
             </div>
           </div>
         </div>
-
-        {/* User Account / Signout */}
-        <div className="p-4 border-t border-slate-800/60 bg-slate-900/80">
+ 
+        {/* User Account / Signout & Theme Toggle */}
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-900/80">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center flex-shrink-0 border border-slate-700">
-                <User className="w-4 h-4 text-slate-300" />
+              <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 border border-slate-350 dark:border-slate-700">
+                <User className="w-4 h-4 text-slate-600 dark:text-slate-300" />
               </div>
               <div className="overflow-hidden">
-                <p className="text-sm font-semibold truncate text-slate-200">Admin Console</p>
+                <p className="text-sm font-semibold truncate text-slate-800 dark:text-slate-200">Admin Console</p>
                 <p className="text-xs text-slate-500 truncate">info/sales/support</p>
               </div>
             </div>
-            <button 
-              onClick={handleLogout}
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/20 transition-all duration-200"
-              title="Logout"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200"
+                title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '10s' }} />
+                ) : (
+                  <Moon className="w-4 h-4 text-slate-500" />
+                )}
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="p-2 rounded-lg text-slate-400 hover:text-rose-450 hover:bg-rose-100 dark:hover:bg-rose-950/20 transition-all duration-200"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -497,7 +515,7 @@ export default function MailDashboard() {
         
         {/* LEFT COLUMN: EMAIL LIST */}
         <section 
-          className={`w-full md:w-96 border-r border-slate-850 flex flex-col bg-slate-950 flex-shrink-0 transition-all duration-200 ${
+          className={`w-full md:w-96 border-r border-slate-200 dark:border-slate-850 flex flex-col bg-slate-50 dark:bg-slate-950 flex-shrink-0 transition-all duration-200 ${
             selectedEmail ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -508,30 +526,43 @@ export default function MailDashboard() {
                 <div className="md:hidden w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center">
                   <Mail className="w-4 h-4 text-slate-950 stroke-[2.5]" />
                 </div>
-                <h2 className="text-lg font-bold tracking-tight capitalize">
+                <h2 className="text-lg font-bold tracking-tight capitalize text-slate-900 dark:text-slate-100">
                   {activeFolder}
                 </h2>
               </div>
-              <button 
-                onClick={fetchEmails} 
-                className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
-                title="Refresh Mailbox"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-400' : ''}`} />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={toggleTheme}
+                  className="md:hidden p-2 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200"
+                  title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="w-4 h-4 text-amber-500" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-slate-500" />
+                  )}
+                </button>
+                <button 
+                  onClick={fetchEmails} 
+                  className="p-2 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200"
+                  title="Refresh Mailbox"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-500 dark:text-emerald-400' : ''}`} />
+                </button>
+              </div>
             </div>
             
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 placeholder="Search mail..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-all"
               />
             </div>
-
+ 
             {/* Quick Pills for Subdomain Mailboxes (Very mobile friendly!) */}
             <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar select-none">
               {[
@@ -547,29 +578,29 @@ export default function MailDashboard() {
                     onClick={() => { setSelectedAccount(acc.id as any); setSelectedEmail(null); }}
                     className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all flex items-center gap-1.5 whitespace-nowrap ${
                       selectedAccount === acc.id
-                        ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                     }`}
                   >
                     <span>{acc.label}</span>
                     {count > 0 && (
-                      <span className={`w-2.5 h-2.5 rounded-full ${selectedAccount === acc.id ? 'bg-emerald-400' : 'bg-emerald-500/60'}`} />
+                      <span className={`w-2.5 h-2.5 rounded-full ${selectedAccount === acc.id ? 'bg-emerald-555' : 'bg-emerald-500/60'}`} />
                     )}
                   </button>
                 );
               })}
             </div>
           </div>
-
+ 
           {/* Email Items List */}
-          <div className="flex-grow overflow-y-auto divide-y divide-slate-900/60 custom-scrollbar pb-6">
+          <div className="flex-grow overflow-y-auto divide-y divide-slate-200 dark:divide-slate-900/60 custom-scrollbar pb-6">
             {loading ? (
-              <div className="flex flex-col items-center justify-center h-48 text-slate-500">
-                <RefreshCw className="w-6 h-6 animate-spin mb-2 text-emerald-400" />
+              <div className="flex flex-col items-center justify-center h-48 text-slate-450 dark:text-slate-500">
+                <RefreshCw className="w-6 h-6 animate-spin mb-2 text-emerald-500 dark:text-emerald-400" />
                 <span className="text-xs">Loading mail...</span>
               </div>
             ) : filteredEmails.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-48 text-slate-600 px-4 text-center">
+              <div className="flex flex-col items-center justify-center h-48 text-slate-450 dark:text-slate-600 px-4 text-center">
                 <Mail className="w-8 h-8 mb-2 opacity-30" />
                 <span className="text-sm font-medium">No messages found</span>
                 <span className="text-xs opacity-60 mt-1">Check back later or try a different search.</span>
@@ -581,43 +612,43 @@ export default function MailDashboard() {
                   onClick={() => handleSelectEmail(email)}
                   className={`p-4 flex gap-3 cursor-pointer select-none transition-all duration-150 relative ${
                     selectedEmail?.id === email.id
-                      ? 'bg-slate-800/40 border-l-2 border-emerald-500'
-                      : 'hover:bg-slate-900/50 border-l-2 border-transparent'
-                  } ${email.status === 'unread' ? 'bg-slate-900/20 font-semibold' : ''}`}
+                      ? 'bg-slate-200/50 dark:bg-slate-800/40 border-l-2 border-emerald-500'
+                      : 'hover:bg-slate-200/20 dark:hover:bg-slate-900/50 border-l-2 border-transparent'
+                  } ${email.status === 'unread' ? 'bg-slate-200/40 dark:bg-slate-900/20 font-semibold' : ''}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md ${getAvatarBgColor(email.sender)}`}>
-                    {getInitials(email.sender)}
+                     {getInitials(email.sender)}
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-slate-400 truncate max-w-[120px]">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
                         {email.sender.split('<')[0].trim() || email.sender}
                       </span>
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
                         {new Date(email.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                       </span>
                     </div>
-                    <h3 className={`text-sm truncate mb-0.5 ${email.status === 'unread' ? 'text-slate-100 font-bold' : 'text-slate-300'}`}>
+                    <h3 className={`text-sm truncate mb-0.5 ${email.status === 'unread' ? 'text-slate-950 dark:text-slate-100 font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
                       {email.subject}
                     </h3>
                     
                     {/* Recipient tag badge */}
                     <div className="flex items-center gap-1.5 mt-0.5 mb-1">
-                      <span className="text-[9px] px-1.5 py-0.2 rounded border bg-slate-900 border-slate-800 text-slate-400 font-mono">
+                      <span className="text-[9px] px-1.5 py-0.2 rounded border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono">
                         {email.recipient.includes('sales') ? 'sales' : email.recipient.includes('support') ? 'support' : 'info'}
                       </span>
                     </div>
-
-                    <p className="text-xs text-slate-500 line-clamp-2">
+ 
+                    <p className="text-xs text-slate-500 dark:text-slate-450 line-clamp-2">
                       {email.text_content}
                     </p>
                   </div>
-
+ 
                   <div className="absolute right-3 bottom-3 flex items-center gap-1 opacity-0 hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => handleDeleteEmail(email.id, e)}
-                      className="p-1 rounded bg-slate-800 hover:bg-rose-950/40 text-slate-500 hover:text-rose-400 transition-colors"
+                      className="p-1 rounded bg-slate-200 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                       title="Delete email"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -631,10 +662,10 @@ export default function MailDashboard() {
             )}
           </div>
         </section>
-
+ 
         {/* RIGHT COLUMN: EMAIL READER PANE */}
         <section 
-          className={`flex-grow flex-col bg-slate-900/20 transition-all duration-200 ${
+          className={`flex-grow flex-col bg-slate-100/30 dark:bg-slate-900/20 transition-all duration-200 ${
             selectedEmail ? 'flex' : 'hidden md:flex'
           }`}
         >
@@ -642,64 +673,64 @@ export default function MailDashboard() {
             <div className="h-full flex flex-col">
               
               {/* Reader Action Bar */}
-              <div className="px-4 md:px-6 py-4 border-b border-slate-850 flex items-center justify-between flex-shrink-0 bg-slate-950/20">
+              <div className="px-4 md:px-6 py-4 border-b border-slate-200 dark:border-slate-850 flex items-center justify-between flex-shrink-0 bg-white dark:bg-slate-955/20">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSelectedEmail(null)}
-                    className="md:hidden p-2 rounded-lg bg-slate-855 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center border border-slate-800"
+                    className="md:hidden p-2 rounded-lg bg-white dark:bg-slate-855 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center justify-center border border-slate-200 dark:border-slate-800"
                     title="Back to inbox"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
-
+ 
                   <button
                     onClick={() => handleReply(selectedEmail)}
-                    className="py-2 px-4 rounded-lg bg-slate-850 hover:bg-slate-800 hover:text-emerald-400 border border-slate-800 font-semibold text-sm flex items-center gap-2 text-slate-200 transition-all active:scale-95"
+                    className="py-2 px-4 rounded-lg bg-white dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-800 font-semibold text-sm flex items-center gap-2 text-slate-700 dark:text-slate-200 transition-all active:scale-95"
                   >
-                    <Reply className="w-4 h-4 text-emerald-450" />
+                    <Reply className="w-4 h-4 text-emerald-500 dark:text-emerald-450" />
                     Reply
                   </button>
                   
                   <button
                     onClick={(e) => handleDeleteEmail(selectedEmail.id, e)}
-                    className="p-2 rounded-lg bg-slate-855 hover:bg-rose-955/30 text-slate-400 hover:text-rose-400 border border-slate-800 transition-all"
+                    className="p-2 rounded-lg bg-white dark:bg-slate-855 hover:bg-rose-100 dark:hover:bg-rose-955/30 text-slate-400 hover:text-rose-605 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-800 transition-all"
                     title="Delete Email"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-
-                <div className="text-[10px] md:text-xs text-slate-500 font-mono truncate max-w-[120px] md:max-w-none">
+ 
+                <div className="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-mono truncate max-w-[120px] md:max-w-none">
                   {selectedEmail.resend_id || selectedEmail.id}
                 </div>
               </div>
-
+ 
               {/* Reader Body (Scrollable) */}
               <div className="flex-grow overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar pb-10">
                 
                 {/* Header Information */}
                 <div>
-                  <h2 className="text-lg md:text-xl font-bold text-slate-100 mb-4">{selectedEmail.subject}</h2>
+                  <h2 className="text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">{selectedEmail.subject}</h2>
                   
-                  <div className="flex justify-between items-start bg-slate-900/50 p-4 rounded-xl border border-slate-850 gap-2">
+                  <div className="flex justify-between items-start bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-850 gap-2">
                     <div className="flex gap-3 min-w-0">
-                      <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-800 border border-slate-700 shadow-inner text-emerald-400 flex-shrink-0`}>
+                      <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-inner text-emerald-600 dark:text-emerald-400 flex-shrink-0`}>
                         {getInitials(selectedEmail.sender)}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-xs md:text-sm font-semibold text-slate-200 truncate">{selectedEmail.sender}</div>
-                        <div className="text-[10px] md:text-xs text-slate-400 truncate">To: {selectedEmail.recipient}</div>
+                        <div className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{selectedEmail.sender}</div>
+                        <div className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate">To: {selectedEmail.recipient}</div>
                       </div>
                     </div>
                     
-                    <div className="text-[10px] md:text-xs text-slate-500 font-medium whitespace-nowrap pt-1">
+                    <div className="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-medium whitespace-nowrap pt-1">
                       {new Date(selectedEmail.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                     </div>
                   </div>
                 </div>
-
+ 
                 {/* Email Body Rendering */}
-                <div className="bg-slate-900/20 border border-slate-855/60 rounded-xl p-4 md:p-6 min-h-[220px] text-slate-200 leading-relaxed text-sm select-text whitespace-pre-wrap overflow-x-auto">
+                <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-855/60 rounded-xl p-4 md:p-6 min-h-[220px] text-slate-800 dark:text-slate-200 leading-relaxed text-sm select-text whitespace-pre-wrap overflow-x-auto">
                   {selectedEmail.html_content ? (
                     <div 
                       dangerouslySetInnerHTML={{ __html: selectedEmail.html_content }} 
@@ -709,12 +740,12 @@ export default function MailDashboard() {
                     selectedEmail.text_content
                   )}
                 </div>
-
+ 
                 {/* Attachments Section */}
                 {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
                   <div className="space-y-2 pb-6">
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                      <Paperclip className="w-3.5 h-3.5 text-emerald-400" />
+                    <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <Paperclip className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                       Attachments ({selectedEmail.attachments.length})
                     </h4>
                     
@@ -722,12 +753,12 @@ export default function MailDashboard() {
                       {selectedEmail.attachments.map((att, idx) => (
                         <div 
                           key={idx}
-                          className="flex items-center justify-between p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors"
+                          className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 transition-colors"
                         >
                           <div className="flex items-center gap-3 overflow-hidden">
                             <FileText className="w-8 h-8 text-emerald-500 flex-shrink-0" />
                             <div className="overflow-hidden">
-                              <p className="text-xs font-medium text-slate-200 truncate" title={att.name}>
+                              <p className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate" title={att.name}>
                                 {att.name}
                               </p>
                               <p className="text-[10px] text-slate-500">
@@ -741,7 +772,7 @@ export default function MailDashboard() {
                               href={att.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:text-slate-950 bg-emerald-950/20 hover:bg-emerald-400 rounded-md border border-emerald-800/30 hover:border-emerald-400 transition-all"
+                              className="px-2.5 py-1 text-[11px] font-bold text-emerald-600 hover:text-white dark:text-emerald-400 dark:hover:text-slate-950 bg-emerald-500/10 hover:bg-emerald-500 dark:bg-emerald-950/20 dark:hover:bg-emerald-400 rounded-md border border-emerald-200 dark:border-emerald-800/30 hover:border-emerald-405 transition-all"
                             >
                               Download
                             </a>
@@ -751,52 +782,52 @@ export default function MailDashboard() {
                     </div>
                   </div>
                 )}
-
+ 
               </div>
             </div>
           ) : (
             /* Placeholder state when no email is open */
-            <div className="h-full flex flex-col items-center justify-center text-slate-600 select-none px-4 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 shadow-xl">
-                <Mail className="w-7 h-7 text-slate-500 opacity-60" />
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 select-none px-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 shadow-xl">
+                <Mail className="w-7 h-7 text-slate-400 dark:text-slate-500 opacity-60" />
               </div>
-              <h3 className="text-base font-semibold text-slate-400">Select an email to view</h3>
+              <h3 className="text-base font-semibold text-slate-650 dark:text-slate-400">Select an email to view</h3>
               <p className="text-xs text-slate-500 mt-1 max-w-[280px]">
                 Pick a conversation from the sidebar inbox to read its details, reply, or download attachments.
               </p>
             </div>
           )}
         </section>
-
+ 
         {/* 3. MOBILE APP BOTTOM NAVIGATION BAR (FOOTER) */}
-        <footer className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900 border-t border-slate-800 flex items-center justify-around px-2 z-40 select-none">
+        <footer className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-2 z-40 select-none">
           <button
             onClick={() => { setActiveFolder('inbox'); setSelectedEmail(null); }}
             className={`flex flex-col items-center justify-center w-14 h-full gap-1 transition-all ${
-              activeFolder === 'inbox' ? 'text-emerald-400 font-bold scale-105' : 'text-slate-400'
+              activeFolder === 'inbox' ? 'text-emerald-650 dark:text-emerald-400 font-bold scale-105' : 'text-slate-400 dark:text-slate-500'
             }`}
           >
             <div className="relative">
               <Inbox className="w-5 h-5" />
               {totalUnreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-emerald-500 text-slate-950 font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-slate-900">
+                <span className="absolute -top-1.5 -right-2 bg-emerald-500 text-slate-950 font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-900">
                   {totalUnreadCount}
                 </span>
               )}
             </div>
             <span className="text-[10px]">Inbox</span>
           </button>
-
+ 
           <button
             onClick={() => { setActiveFolder('sent'); setSelectedEmail(null); }}
             className={`flex flex-col items-center justify-center w-14 h-full gap-1 transition-all ${
-              activeFolder === 'sent' ? 'text-emerald-400 font-bold scale-105' : 'text-slate-400'
+              activeFolder === 'sent' ? 'text-emerald-650 dark:text-emerald-400 font-bold scale-105' : 'text-slate-400 dark:text-slate-500'
             }`}
           >
             <Send className="w-5 h-5" />
             <span className="text-[10px]">Sent</span>
           </button>
-
+ 
           {/* Floating center plus icon */}
           <button
             onClick={() => { setIsComposing(true); setComposeFrom('info'); }}
@@ -804,114 +835,114 @@ export default function MailDashboard() {
           >
             <Plus className="w-6 h-6 stroke-[3]" />
           </button>
-
+ 
           <button
             onClick={fetchEmails}
-            className="flex flex-col items-center justify-center w-14 h-full gap-1 text-slate-400 active:text-emerald-400 transition-all"
+            className="flex flex-col items-center justify-center w-14 h-full gap-1 text-slate-400 dark:text-slate-500 active:text-emerald-600 dark:active:text-emerald-400 transition-all"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin text-emerald-400' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin text-emerald-500 dark:text-emerald-400' : ''}`} />
             <span className="text-[10px]">Refresh</span>
           </button>
-
+ 
           <button
             onClick={handleLogout}
-            className="flex flex-col items-center justify-center w-14 h-full gap-1 text-slate-400 hover:text-rose-400 transition-all"
+            className="flex flex-col items-center justify-center w-14 h-full gap-1 text-slate-400 dark:text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 transition-all"
           >
             <LogOut className="w-5 h-5" />
             <span className="text-[10px]">Logout</span>
           </button>
         </footer>
-
+ 
       </main>
 
       {/* 4. COMPOSE MODAL OVERLAY (Full screen on mobile) */}
       {isComposing && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-4">
-          <div className="bg-slate-900 border-none md:border md:border-slate-800 md:rounded-2xl w-full h-full md:h-auto md:max-w-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 dark:bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-0 md:p-4">
+          <div className="bg-white dark:bg-slate-900 border-none md:border md:border-slate-200 md:dark:border-slate-800 md:rounded-2xl w-full h-full md:h-auto md:max-w-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
             
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50 flex-shrink-0">
-              <h2 className="font-extrabold text-slate-100 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-emerald-400" />
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50 flex-shrink-0">
+              <h2 className="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 New Message
               </h2>
               <button
                 onClick={() => setIsComposing(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-
+ 
             {/* Compose Form */}
             <form onSubmit={handleSend} className="flex-1 flex flex-col overflow-hidden">
-              <div className="p-6 space-y-4 flex-grow overflow-y-auto custom-scrollbar">
+              <div className="p-6 space-y-4 flex-grow overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900">
                 
                 {/* From Dropdown (Selection of Sender Mailbox) */}
-                <div className="flex items-center border-b border-slate-800/80 pb-2">
-                  <label className="text-sm font-semibold text-slate-500 w-12 select-none">From:</label>
+                <div className="flex items-center border-b border-slate-200 dark:border-slate-800/80 pb-2">
+                  <label className="text-sm font-semibold text-slate-400 dark:text-slate-500 w-12 select-none">From:</label>
                   <select
                     value={composeFrom}
                     onChange={e => setComposeFrom(e.target.value as any)}
-                    className="bg-transparent text-sm text-emerald-450 border-none outline-none focus:ring-0 focus:outline-none cursor-pointer font-bold pr-6"
+                    className="bg-transparent text-sm text-emerald-600 dark:text-emerald-450 border-none outline-none focus:ring-0 focus:outline-none cursor-pointer font-bold pr-6"
                   >
-                    <option value="info" className="bg-slate-900 text-slate-200">info@x-med.co</option>
-                    <option value="sales" className="bg-slate-900 text-slate-200">sales@x-med.co</option>
-                    <option value="support" className="bg-slate-900 text-slate-200">support@x-med.co</option>
+                    <option value="info" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">info@x-med.co</option>
+                    <option value="sales" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">sales@x-med.co</option>
+                    <option value="support" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">support@x-med.co</option>
                   </select>
                 </div>
-
+ 
                 {/* To */}
-                <div className="flex items-center border-b border-slate-800/80 pb-2">
-                  <label className="text-sm font-semibold text-slate-500 w-12 select-none">To:</label>
+                <div className="flex items-center border-b border-slate-200 dark:border-slate-800/80 pb-2">
+                  <label className="text-sm font-semibold text-slate-400 dark:text-slate-500 w-12 select-none">To:</label>
                   <input
                     type="email"
                     value={composeTo}
                     onChange={e => setComposeTo(e.target.value)}
                     required
                     placeholder="recipient@example.com"
-                    className="flex-grow bg-transparent text-sm text-slate-200 border-none outline-none focus:ring-0 focus:outline-none"
+                    className="flex-grow bg-transparent text-sm text-slate-800 dark:text-slate-200 border-none outline-none focus:ring-0 focus:outline-none"
                   />
                 </div>
-
+ 
                 {/* Subject */}
-                <div className="flex items-center border-b border-slate-800/80 pb-2">
-                  <label className="text-sm font-semibold text-slate-500 w-12 select-none">Sub:</label>
+                <div className="flex items-center border-b border-slate-200 dark:border-slate-800/80 pb-2">
+                  <label className="text-sm font-semibold text-slate-400 dark:text-slate-500 w-12 select-none">Sub:</label>
                   <input
                     type="text"
                     value={composeSubject}
                     onChange={e => setComposeSubject(e.target.value)}
                     placeholder="Enter subject line"
-                    className="flex-grow bg-transparent text-sm text-slate-200 border-none outline-none focus:ring-0 focus:outline-none"
+                    className="flex-grow bg-transparent text-sm text-slate-800 dark:text-slate-200 border-none outline-none focus:ring-0 focus:outline-none"
                   />
                 </div>
-
+ 
                 {/* Message Body */}
                 <div className="flex flex-col min-h-[200px]">
                   <textarea
                     value={composeBody}
                     onChange={e => setComposeBody(e.target.value)}
                     placeholder="Compose your email here..."
-                    className="w-full flex-grow bg-transparent text-sm text-slate-200 resize-none border-none outline-none focus:ring-0 focus:outline-none font-sans custom-scrollbar"
+                    className="w-full flex-grow bg-transparent text-sm text-slate-800 dark:text-slate-200 resize-none border-none outline-none focus:ring-0 focus:outline-none font-sans custom-scrollbar"
                   />
                 </div>
-
+ 
                 {/* Added Attachments Display */}
                 {composeAttachments.length > 0 && (
-                  <div className="pt-2 border-t border-slate-800/50 space-y-1.5 pb-4">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Added Files</span>
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800/50 space-y-1.5 pb-4">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Added Files</span>
                     <div className="flex flex-wrap gap-1.5">
                       {composeAttachments.map((file, index) => (
                         <div 
                           key={index}
-                          className="flex items-center gap-2 py-1 px-2 rounded-md bg-slate-850 border border-slate-855 text-xs text-slate-300"
+                          className="flex items-center gap-2 py-1 px-2 rounded-md bg-slate-100 dark:bg-slate-850 border border-slate-200 dark:border-slate-855 text-xs text-slate-700 dark:text-slate-300"
                         >
-                          <Paperclip className="w-3.5 h-3.5 text-slate-500" />
+                          <Paperclip className="w-3.5 h-3.5 text-slate-450 dark:text-slate-500" />
                           <span className="truncate max-w-[150px]">{file.name}</span>
                           <button 
                             type="button"
                             onClick={() => removeAttachment(index)}
-                            className="p-0.5 rounded-full hover:bg-slate-750 text-slate-500 hover:text-slate-300 transition-colors"
+                            className="p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-500 hover:text-slate-350 dark:hover:text-slate-300 transition-colors"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -921,9 +952,9 @@ export default function MailDashboard() {
                   </div>
                 )}
               </div>
-
+ 
               {/* Form Actions Footer */}
-              <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between flex-shrink-0">
+              <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-1">
                   <input
                     type="file"
@@ -935,18 +966,18 @@ export default function MailDashboard() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-all"
+                    className="p-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
                     title="Attach Files"
                   >
                     <Paperclip className="w-5 h-5" />
                   </button>
                 </div>
-
+ 
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setIsComposing(false)}
-                    className="py-2.5 px-4 rounded-xl border border-slate-800 hover:bg-slate-850 text-slate-300 font-bold text-sm transition-all"
+                    className="py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-300 font-bold text-sm transition-all"
                   >
                     Cancel
                   </button>
@@ -958,7 +989,7 @@ export default function MailDashboard() {
                     {isSending ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin" />
-                        Sending...
+                         Sending...
                       </>
                     ) : (
                       <>
@@ -970,23 +1001,23 @@ export default function MailDashboard() {
                 </div>
               </div>
             </form>
-
+ 
           </div>
         </div>
       )}
-
+ 
       {/* 5. TOAST NOTIFICATIONS */}
       {notification && (
-        <div className="fixed bottom-20 md:bottom-4 right-4 z-50 flex items-center gap-2.5 py-3.5 px-5 rounded-xl shadow-2xl border bg-slate-900 border-slate-800 text-sm font-semibold animate-in slide-in-from-bottom-5 duration-350">
+        <div className="fixed bottom-20 md:bottom-4 right-4 z-50 flex items-center gap-2.5 py-3.5 px-5 rounded-xl shadow-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-sm font-semibold animate-in slide-in-from-bottom-5 duration-350">
           {notification.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
           ) : (
             <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
           )}
-          <span className="text-slate-200">{notification.text}</span>
+          <span className="text-slate-800 dark:text-slate-200">{notification.text}</span>
         </div>
       )}
-
+ 
     </div>
   );
 }
