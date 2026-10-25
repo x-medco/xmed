@@ -29,41 +29,49 @@ export default function OverviewTab({ data }: OverviewTabProps) {
   // Supabase Realtime Subscription for Live Orders
   useEffect(() => {
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase || typeof supabase.channel !== 'function') return;
 
-    const channel = supabase
-      .channel('live-orders')
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'orders' }, 
-        (payload: any) => {
-          console.log('Realtime Order Inserted:', payload.new);
-          const newOrder = {
-            id: payload.new.id,
-            name: payload.new.name,
-            email: payload.new.email,
-            city: payload.new.city,
-            total_amount: Number(payload.new.total),
-            status: payload.new.status,
-            created_at: payload.new.created_at,
-            payment_method: payload.new.payment_method
-          };
-          
-          setRecentOrders(prev => [newOrder, ...prev.slice(0, 9)]);
-          
-          // Dynamically adjust stats summary
-          setStats((prevStats: any) => ({
-            ...prevStats,
-            revenue: prevStats.revenue + newOrder.total_amount,
-            ordersCount: prevStats.ordersCount + 1,
-            aov: prevStats.ordersCount > 0 ? (prevStats.revenue + newOrder.total_amount) / (prevStats.ordersCount + 1) : newOrder.total_amount
-          }));
-        }
-      )
-      .subscribe();
+    let channel: any = null;
+    try {
+      channel = supabase
+        .channel('live-orders')
+        .on(
+          'postgres_changes', 
+          { event: 'INSERT', schema: 'public', table: 'orders' }, 
+          (payload: any) => {
+            console.log('Realtime Order Inserted:', payload?.new);
+            if (!payload?.new) return;
+            const newOrder = {
+              id: payload.new.id,
+              name: payload.new.name,
+              email: payload.new.email,
+              city: payload.new.city,
+              total_amount: Number(payload.new.total),
+              status: payload.new.status,
+              created_at: payload.new.created_at,
+              payment_method: payload.new.payment_method
+            };
+            
+            setRecentOrders(prev => [newOrder, ...prev.slice(0, 9)]);
+            
+            // Dynamically adjust stats summary
+            setStats((prevStats: any) => ({
+              ...prevStats,
+              revenue: prevStats.revenue + newOrder.total_amount,
+              ordersCount: prevStats.ordersCount + 1,
+              aov: prevStats.ordersCount > 0 ? (prevStats.revenue + newOrder.total_amount) / (prevStats.ordersCount + 1) : newOrder.total_amount
+            }));
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('Live orders realtime subscription failed:', e);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel && supabase && typeof supabase.removeChannel === 'function') {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 

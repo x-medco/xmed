@@ -22,45 +22,51 @@ export default function LiveVisitorsTab({ data }: LiveVisitorsTabProps) {
   // Supabase Realtime Subscription for Live Page Views
   useEffect(() => {
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase || typeof supabase.channel !== 'function') return;
 
-    const channel = supabase
-      .channel('live-visitors-tab')
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'page_views' }, 
-        (payload: any) => {
-          console.log('Tab Live Visitor Event:', payload.new);
-          const pv = payload.new;
-          
-          setLiveSessions((prev) => {
-            const index = prev.findIndex(s => s.session_id === pv.session_id);
-            if (index !== -1) {
-              // Update existing visitor session
-              const updated = [...prev];
-              updated[index] = {
-                ...updated[index],
-                page_url: pv.page_url,
-                created_at: pv.created_at
-              };
-              return updated;
-            } else {
-              // Append new visitor session
-              const newSession = {
-                session_id: pv.session_id,
-                city: pv.city,
-                country: pv.country,
-                device: pv.device,
-                traffic_source: pv.traffic_source,
-                page_url: pv.page_url,
-                created_at: pv.created_at
-              };
-              return [newSession, ...prev];
-            }
-          });
-        }
-      )
-      .subscribe();
+    let channel: any = null;
+    try {
+      channel = supabase
+        .channel('live-visitors-tab')
+        .on(
+          'postgres_changes', 
+          { event: 'INSERT', schema: 'public', table: 'page_views' }, 
+          (payload: any) => {
+            console.log('Tab Live Visitor Event:', payload?.new);
+            const pv = payload?.new;
+            if (!pv) return;
+            
+            setLiveSessions((prev) => {
+              const index = prev.findIndex(s => s.session_id === pv.session_id);
+              if (index !== -1) {
+                // Update existing visitor session
+                const updated = [...prev];
+                updated[index] = {
+                  ...updated[index],
+                  page_url: pv.page_url,
+                  created_at: pv.created_at
+                };
+                return updated;
+              } else {
+                // Append new visitor session
+                const newSession = {
+                  session_id: pv.session_id,
+                  city: pv.city,
+                  country: pv.country,
+                  device: pv.device,
+                  traffic_source: pv.traffic_source,
+                  page_url: pv.page_url,
+                  created_at: pv.created_at
+                };
+                return [newSession, ...prev];
+              }
+            });
+          }
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('Live visitors realtime subscription failed:', e);
+    }
 
     // Client-side cleanup of expired sessions (stale for >5 mins)
     const interval = setInterval(() => {
@@ -69,7 +75,9 @@ export default function LiveVisitorsTab({ data }: LiveVisitorsTabProps) {
     }, 10000);
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel && supabase && typeof supabase.removeChannel === 'function') {
+        supabase.removeChannel(channel);
+      }
       clearInterval(interval);
     };
   }, []);

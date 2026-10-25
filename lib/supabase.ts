@@ -163,7 +163,16 @@ export const mockDb = {
         };
       }
     };
-  }
+  },
+  channel: () => {
+    const dummy: any = {
+      on: () => dummy,
+      subscribe: () => dummy,
+      unsubscribe: () => {}
+    };
+    return dummy;
+  },
+  removeChannel: () => {}
 };
 
 // Client API wrapper that checks configuration and uses the appropriate database client

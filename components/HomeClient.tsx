@@ -50,32 +50,40 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
 
   useEffect(() => {
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase || typeof supabase.channel !== 'function') return;
 
-    const channel = supabase
-      .channel('homepage-order-notifications')
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'orders' }, 
-        (payload: any) => {
-          console.log('Homepage Realtime Order:', payload.new);
-          setNewOrderNotification({
-            id: payload.new.id,
-            name: payload.new.name,
-            total: Number(payload.new.total),
-            city: payload.new.city
-          });
-          // Hide notification after 8 seconds
-          setTimeout(() => {
-            setNewOrderNotification(null);
-          }, 8000);
+    try {
+      const channel = supabase
+        .channel('homepage-order-notifications')
+        .on(
+          'postgres_changes', 
+          { event: 'INSERT', schema: 'public', table: 'orders' }, 
+          (payload: any) => {
+            console.log('Homepage Realtime Order:', payload?.new);
+            if (payload?.new) {
+              setNewOrderNotification({
+                id: payload.new.id,
+                name: payload.new.name,
+                total: Number(payload.new.total),
+                city: payload.new.city
+              });
+              // Hide notification after 8 seconds
+              setTimeout(() => {
+                setNewOrderNotification(null);
+              }, 8000);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        if (supabase && typeof supabase.removeChannel === 'function') {
+          supabase.removeChannel(channel);
         }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      };
+    } catch (e) {
+      console.warn('Realtime subscription failed:', e);
+    }
   }, []);
 
   /* Best Seller products to display on home page */
