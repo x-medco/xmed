@@ -111,8 +111,10 @@ export async function middleware(request: NextRequest) {
   // C. MAIN STOREFRONT DOMAIN ROUTING CONTROL
   // ==========================================
   
-  // Enforce redirection from /mail subpaths to the dedicated mail subdomain
-  if (pathname.startsWith('/mail')) {
+  const isPreviewHost = hostname.includes('hostingersite.com');
+
+  // Enforce redirection from /mail subpaths to the dedicated mail subdomain (production only)
+  if (pathname.startsWith('/mail') && !isPreviewHost) {
     const protocol = request.nextUrl.protocol;
     const targetSubdomain = hostname.startsWith('localhost:3000') 
       ? 'mail.localhost:3000' 
@@ -121,14 +123,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(`${protocol}//${targetSubdomain}/login`);
   }
 
-  // Enforce redirection from /admin subpaths to the dedicated admin subdomain
-  if (pathname.startsWith('/admin')) {
+  // Enforce redirection from /admin subpaths to the dedicated admin subdomain (production only)
+  if (pathname.startsWith('/admin') && !isPreviewHost) {
     const protocol = request.nextUrl.protocol;
     const targetSubdomain = hostname.startsWith('localhost:3000') 
       ? 'admin.localhost:3000' 
       : 'admin.x-med.co';
       
     return NextResponse.redirect(`${protocol}//${targetSubdomain}/login`);
+  }
+
+  // If on preview host, protect /admin and /mail with authentication
+  if (isPreviewHost) {
+    if (pathname === '/admin') {
+      const adminAuth = request.cookies.get('admin_auth')?.value;
+      if (adminAuth !== 'true') {
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+    }
+    if (pathname === '/mail') {
+      const adminAuth = request.cookies.get('admin_auth')?.value;
+      if (adminAuth !== 'true') {
+        return NextResponse.redirect(new URL('/mail/login', request.url));
+      }
+    }
   }
 
   // MAINTENANCE MODE GUARD FOR PUBLIC PAGES
