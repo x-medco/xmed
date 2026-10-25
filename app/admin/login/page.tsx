@@ -26,7 +26,11 @@ export default function AdminLoginPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push('/admin');
+        if (typeof window !== 'undefined' && window.location.host.startsWith('admin.')) {
+          router.push('/');
+        } else {
+          router.push('/admin');
+        }
         router.refresh();
       } else {
         setError(data.error || 'Authentication rejected.');

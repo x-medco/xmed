@@ -26,8 +26,11 @@ export default function MailLoginPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        // Redirect to subdomain root (which middleware maps to /mail)
-        router.push('/');
+        if (typeof window !== 'undefined' && window.location.host.startsWith('mail.')) {
+          router.push('/');
+        } else {
+          router.push('/mail');
+        }
         router.refresh();
       } else {
         setError(data.error || 'Authentication rejected.');

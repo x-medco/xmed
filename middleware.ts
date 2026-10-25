@@ -111,42 +111,28 @@ export async function middleware(request: NextRequest) {
   // C. MAIN STOREFRONT DOMAIN ROUTING CONTROL
   // ==========================================
   
-  const isPreviewHost = hostname.includes('hostingersite.com');
-
-  // Enforce redirection from /mail subpaths to the dedicated mail subdomain (production only)
-  if (pathname.startsWith('/mail') && !isPreviewHost) {
-    const protocol = request.nextUrl.protocol;
-    const targetSubdomain = hostname.startsWith('localhost:3000') 
-      ? 'mail.localhost:3000' 
-      : 'mail.x-med.co';
-      
-    return NextResponse.redirect(`${protocol}//${targetSubdomain}/login`);
+  // Handle direct /admin path on main domain with auth protection
+  if (pathname.startsWith('/admin')) {
+    if (pathname === '/admin/login') {
+      return NextResponse.next();
+    }
+    const adminAuth = request.cookies.get('admin_auth')?.value;
+    if (adminAuth !== 'true') {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    return NextResponse.next();
   }
 
-  // Enforce redirection from /admin subpaths to the dedicated admin subdomain (production only)
-  if (pathname.startsWith('/admin') && !isPreviewHost) {
-    const protocol = request.nextUrl.protocol;
-    const targetSubdomain = hostname.startsWith('localhost:3000') 
-      ? 'admin.localhost:3000' 
-      : 'admin.x-med.co';
-      
-    return NextResponse.redirect(`${protocol}//${targetSubdomain}/login`);
-  }
-
-  // If on preview host, protect /admin and /mail with authentication
-  if (isPreviewHost) {
-    if (pathname === '/admin') {
-      const adminAuth = request.cookies.get('admin_auth')?.value;
-      if (adminAuth !== 'true') {
-        return NextResponse.redirect(new URL('/admin/login', request.url));
-      }
+  // Handle direct /mail path on main domain with auth protection
+  if (pathname.startsWith('/mail')) {
+    if (pathname === '/mail/login') {
+      return NextResponse.next();
     }
-    if (pathname === '/mail') {
-      const adminAuth = request.cookies.get('admin_auth')?.value;
-      if (adminAuth !== 'true') {
-        return NextResponse.redirect(new URL('/mail/login', request.url));
-      }
+    const adminAuth = request.cookies.get('admin_auth')?.value;
+    if (adminAuth !== 'true') {
+      return NextResponse.redirect(new URL('/mail/login', request.url));
     }
+    return NextResponse.next();
   }
 
   // MAINTENANCE MODE GUARD FOR PUBLIC PAGES
