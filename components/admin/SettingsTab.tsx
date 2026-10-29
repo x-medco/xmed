@@ -11,7 +11,7 @@ export default function SettingsTab() {
   const [seeding, setSeeding] = useState(false);
   const [seedSuccess, setSeedSuccess] = useState(false);
   const [storeName, setStoreName] = useState('X-MED Peptide Reagents');
-  const [webhookUrl, setWebhookUrl] = useState('https://xmed-gamma.vercel.app/api/webhooks/stripe');
+  const [webhookUrl, setWebhookUrl] = useState('https://x-med.co/api/webhooks/stripe');
   const [saved, setSaved] = useState(false);
 
   // Maintenance Mode States
