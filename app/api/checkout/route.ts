@@ -17,7 +17,7 @@ const supabaseServer = isSupabaseServerConfigured
 
 export async function POST(req: NextRequest) {
   try {
-    const { lines, customer, amount } = await req.json();
+    const { lines, customer, amount, discount = 0 } = await req.json();
 
     if (!Array.isArray(lines) || lines.length === 0) {
       return NextResponse.json({ error: 'Cart is empty.' }, { status: 400 });
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
           postcode: customer.postcode,
           country: customer.country,
           total: amount,
-          discount: 0,
+          discount: Number(discount) || 0,
           status: 'placed'
         })
         .select()

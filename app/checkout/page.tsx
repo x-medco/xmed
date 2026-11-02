@@ -9,7 +9,7 @@ import { CreditCard, Truck, Lock, Mail, User, MapPin, Sparkles, ShieldAlert, Ale
 import { motion } from 'framer-motion';
 
 export default function CheckoutPage() {
-  const { lines, subtotal, discount, total, clear } = useCart();
+  const { lines, subtotal, discount, bogoDiscount, storewideDiscount, total, clear } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lines, customer: form, amount: finalTotal }),
+        body: JSON.stringify({ lines, customer: form, amount: finalTotal, discount }),
       });
       const data = await res.json();
       
@@ -254,13 +254,23 @@ export default function CheckoutPage() {
                   <span>€{subtotal.toFixed(2)}</span>
                 </div>
                 
-                {discount > 0 && (
+                {bogoDiscount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span className="flex items-center gap-1">
                       <Sparkles className="w-3.5 h-3.5" />
                       BOGO Discount
                     </span>
-                    <span>-€{discount.toFixed(2)}</span>
+                    <span>-€{bogoDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {storewideDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-600 font-semibold">
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      15% Storewide Discount
+                    </span>
+                    <span>-€{storewideDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 

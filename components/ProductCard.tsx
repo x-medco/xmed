@@ -72,9 +72,15 @@ export default function ProductCard({ product }: { product: Product }) {
             {/* Price & Action Button */}
             <div className="mt-auto pt-1 sm:pt-2 flex flex-col gap-2 sm:gap-2.5">
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="font-mono text-ink font-bold text-sm sm:text-base md:text-lg">
+                    €{(product.price * 0.85).toFixed(2)}
+                  </span>
+                  <span className="font-mono text-slate-400 text-xs line-through">
                     €{product.price.toFixed(2)}
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 rounded">
+                    15% OFF
                   </span>
                 </div>
               </div>

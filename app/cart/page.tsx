@@ -8,7 +8,7 @@ import { Trash2, ArrowLeft, ShoppingBag, Sparkles, ShieldAlert, ShoppingCart, In
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
-  const { lines, setQty, removeItem, subtotal, discount, total, addItem } = useCart();
+  const { lines, setQty, removeItem, subtotal, discount, bogoDiscount, storewideDiscount, total, addItem } = useCart();
 
   if (lines.length === 0) {
     return (
@@ -155,13 +155,23 @@ export default function CartPage() {
                 <span>€{subtotal.toFixed(2)}</span>
               </div>
               
-              {discount > 0 && (
+              {bogoDiscount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span className="flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5" />
                     BOGO Discount
                   </span>
-                  <span>-€{discount.toFixed(2)}</span>
+                  <span>-€{bogoDiscount.toFixed(2)}</span>
+                </div>
+              )}
+
+              {storewideDiscount > 0 && (
+                <div className="flex justify-between text-emerald-600 font-bold">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    15% Storewide Discount
+                  </span>
+                  <span>-€{storewideDiscount.toFixed(2)}</span>
                 </div>
               )}
               

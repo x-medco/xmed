@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/lib/cart-context';
 import { useTheme } from '@/lib/theme-context';
-import { ShoppingBag, User, Search, Menu, X, ArrowRight, ChevronDown } from 'lucide-react';
+import { ShoppingBag, User, Search, Menu, X, ArrowRight, ChevronDown, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
@@ -24,6 +24,27 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showBanner, setShowBanner] = useState(true);
+
+  useEffect(() => {
+    try {
+      const dismissed = sessionStorage.getItem('xmed_banner_dismissed');
+      if (dismissed === 'true') {
+        setShowBanner(false);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleDismissBanner = () => {
+    setShowBanner(false);
+    try {
+      sessionStorage.setItem('xmed_banner_dismissed', 'true');
+    } catch {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -46,18 +67,43 @@ export default function Header() {
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'py-2 px-4' : 'py-4 px-4'
-        }`}
-      >
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* Top Announcement Stripe */}
+        {showBanner && (
+          <div className="w-full bg-gradient-to-r from-[#060c18] via-[#0e1d38] to-[#060c18] border-b border-blue-500/25 text-white py-1.5 px-3 sm:px-4 shadow-sm relative z-50 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+              <div className="flex-1 flex items-center justify-center gap-2 text-center text-[11px] sm:text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white font-mono font-bold text-[9px] tracking-wider uppercase shadow-sm shrink-0">
+                  <Sparkles className="w-2.5 h-2.5 text-cyan-200 animate-pulse" />
+                  15% OFF
+                </span>
+                <span className="text-slate-200 font-medium">
+                  Storewide Special: <strong className="text-white font-semibold">15% Discount</strong> automatically applied on all products at checkout!
+                </span>
+              </div>
+              <button
+                onClick={handleDismissBanner}
+                className="text-slate-400 hover:text-white transition-colors p-1 shrink-0 rounded-md hover:bg-white/10"
+                aria-label="Dismiss banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div
-          className={`mx-auto max-w-7xl transition-all duration-500 ${
-            scrolled
-              ? 'rounded-2xl bg-white/70 backdrop-blur-[24px] backdrop-saturate-[160%] border border-white/60 shadow-[0_8px_32px_rgba(31,38,135,0.08)]'
-              : 'rounded-2xl bg-white/40 backdrop-blur-[12px] backdrop-saturate-[140%] border border-white/40'
+          className={`transition-all duration-300 ${
+            scrolled ? 'py-2 px-4' : 'py-3.5 px-4'
           }`}
         >
+          <div
+            className={`mx-auto max-w-7xl transition-all duration-500 ${
+              scrolled
+                ? 'rounded-2xl bg-white/70 backdrop-blur-[24px] backdrop-saturate-[160%] border border-white/60 shadow-[0_8px_32px_rgba(31,38,135,0.08)]'
+                : 'rounded-2xl bg-white/40 backdrop-blur-[12px] backdrop-saturate-[140%] border border-white/40'
+            }`}
+          >
           <div className="flex items-center justify-between h-14 px-6">
             {/* Logo */}
             <Link href="/" className="flex items-center group shrink-0">
@@ -140,6 +186,7 @@ export default function Header() {
               </button>
             </div>
           </div>
+        </div>
         </div>
       </header>
 

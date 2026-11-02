@@ -95,8 +95,12 @@ export default function ProductClient({ product, related }: ProductClientProps) 
 
             {/* Pricing Section */}
             <div>
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-3xl font-bold text-ink">€{product.price.toFixed(2)}</span>
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="font-mono text-3xl font-bold text-ink">€{(product.price * 0.85).toFixed(2)}</span>
+                <span className="font-mono text-lg text-slate-400 line-through">€{product.price.toFixed(2)}</span>
+                <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                  15% OFF AT CHECKOUT
+                </span>
                 {product.includesWater && (
                   <span className="text-xs text-blue-655 font-semibold px-2 py-0.5 rounded bg-blue-50 border border-blue-100">
                     + Free Water Vial

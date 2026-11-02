@@ -14,6 +14,8 @@ type CartContextValue = {
   count: number;
   subtotal: number;
   discount: number;
+  bogoDiscount: number;
+  storewideDiscount: number;
   total: number;
 };
 
@@ -71,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [lines]);
 
   // Calculate the BOGO discounts: Buy 1 Get 1 Free on eligible products
-  const discount = useMemo(() => {
+  const bogoDiscount = useMemo(() => {
     return lines.reduce((sum, l) => {
       const product = products.find((p) => p.slug === l.slug);
       if (product && product.bogo) {
@@ -81,6 +83,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return sum;
     }, 0);
   }, [lines]);
+
+  // Calculate 15% storewide discount across all products
+  const storewideDiscount = useMemo(() => {
+    const remaining = Math.max(0, subtotal - bogoDiscount);
+    return Math.round(remaining * 15) / 100;
+  }, [subtotal, bogoDiscount]);
+
+  // Combined total discount
+  const discount = useMemo(() => {
+    return bogoDiscount + storewideDiscount;
+  }, [bogoDiscount, storewideDiscount]);
 
   const total = useMemo(() => {
     return Math.max(0, subtotal - discount);
@@ -95,6 +108,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     count, 
     subtotal, 
     discount, 
+    bogoDiscount,
+    storewideDiscount,
     total 
   };
 
