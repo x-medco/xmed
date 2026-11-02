@@ -7,7 +7,8 @@ import { motion, AnimatePresence, useScroll, useTransform, useInView } from 'fra
 import { 
   ArrowRight, ArrowUpRight, Play,
   Beaker, Shield, FileText, Globe, Microscope,
-  FlaskConical, TestTubes, Factory, Truck, ShoppingBag
+  FlaskConical, TestTubes, Factory, Truck, ShoppingBag,
+  Sparkles, Tag
 } from 'lucide-react';
 import { getSupabaseClient } from '@/lib/supabase';
 import type { Product } from '@/lib/products';
@@ -197,6 +198,47 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
       {/* ============== FEATURED PEPTIDES (16 PRODUCTS) ============== */}
       <RevealSection className="py-20">
         <div className="mx-auto max-w-7xl px-6">
+          {/* 15% Storewide Promo Banner */}
+          <motion.div 
+            variants={fadeUp}
+            className="mb-14 relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-r from-[#071120] via-[#0b1c38] to-[#121133] p-6 sm:p-8 md:p-10 shadow-2xl text-white"
+          >
+            {/* Glowing background highlights */}
+            <div className="absolute -right-16 -top-16 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -left-16 -bottom-16 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex flex-col gap-3 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-300 w-fit">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-300 animate-pulse" />
+                  <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wider uppercase">
+                    Storewide Special Offer
+                  </span>
+                </div>
+                <h3 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight leading-tight">
+                  Get <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-violet-400 bg-clip-text text-transparent">15% OFF</span> On All Research Peptides
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                  Automatic 15% discount applied at checkout on our complete catalog of certified laboratory reagents. Includes 1 free bacteriostatic water vial with every peptide order.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full md:w-auto">
+                <div className="flex flex-col items-center justify-center px-5 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-center">
+                  <span className="font-mono text-2xl sm:text-3xl font-black text-cyan-300 leading-none">15%</span>
+                  <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-1">Discount</span>
+                </div>
+                <Link
+                  href="/products"
+                  className="btn-gradient h-12 px-7 text-xs sm:text-sm font-bold shadow-lg flex items-center justify-center gap-2"
+                >
+                  <span>Shop With 15% Off</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.div variants={fadeUp} className="flex items-end justify-between mb-12">
             <div className="flex flex-col gap-2">
               <span className="text-xs font-mono font-bold tracking-[0.2em] uppercase gradient-text">Best Sellers</span>
@@ -259,15 +301,16 @@ export default function HomeClient({ products, categories }: HomeClientProps) {
                       {/* Price & Action Button */}
                       <div className="mt-auto pt-1 sm:pt-2 flex flex-col gap-2 sm:gap-2.5">
                         <div className="flex items-center justify-between px-1">
-                          <div className="flex items-baseline gap-2">
+                          <div className="flex items-baseline gap-2 flex-wrap">
                             <span className="font-mono text-ink font-bold text-sm sm:text-base md:text-lg">
+                              €{(p.price * 0.85).toFixed(2)}
+                            </span>
+                            <span className="font-mono text-slate-400 text-xs line-through">
                               €{p.price.toFixed(2)}
                             </span>
-                            {p.compareAtPrice && (
-                              <span className="font-mono text-slate-400 line-through text-[10px] sm:text-xs">
-                                €{p.compareAtPrice.toFixed(2)}
-                              </span>
-                            )}
+                            <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 rounded">
+                              15% OFF
+                            </span>
                           </div>
                         </div>
 
