@@ -31,11 +31,11 @@ export async function POST(req: NextRequest) {
 
     // 3. Format and dispatch email via Resend REST API
     // Map the selected from account to Resend domain email format
-    let fromAddress = 'X-Med <info@x-med.co>';
+    let fromAddress = 'X-Med <info@x-med.pro>';
     if (from === 'sales') {
-      fromAddress = 'X-Med Sales <sales@x-med.co>';
+      fromAddress = 'X-Med Sales <sales@x-med.pro>';
     } else if (from === 'support') {
-      fromAddress = 'X-Med Support <support@x-med.co>';
+      fromAddress = 'X-Med Support <support@x-med.pro>';
     }
     
     // Format attachments for Resend API if provided

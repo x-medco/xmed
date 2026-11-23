@@ -67,7 +67,7 @@ export default function MailLoginPage() {
           </div>
 
           <h1 className="text-2xl font-extrabold text-slate-100 mb-2">Workspace Verification</h1>
-          <p className="text-slate-400 text-xs mb-8">Enter your administrative passcode to access info@x-med.co mailbox.</p>
+          <p className="text-slate-400 text-xs mb-8">Enter your administrative passcode to access info@x-med.pro mailbox.</p>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="relative">

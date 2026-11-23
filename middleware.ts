@@ -6,10 +6,10 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
 
   // Define admin subdomain conditions (supports localhost for local testing)
-  const isAdminSubdomain = hostname.startsWith('admin.x-med.co') || hostname.startsWith('admin.localhost:3000');
+  const isAdminSubdomain = hostname.startsWith('admin.x-med.pro') || hostname.startsWith('admin.localhost:3000');
   
   // Define mail subdomain conditions
-  const isMailSubdomain = hostname.startsWith('mail.x-med.co') || hostname.startsWith('mail.localhost:3000');
+  const isMailSubdomain = hostname.startsWith('mail.x-med.pro') || hostname.startsWith('mail.localhost:3000');
 
   // ==========================================
   // A. MAIL SUBDOMAIN ROUTING CONTROL
@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Root mapping (mail.x-med.co/)
+    // Root mapping (mail.x-med.pro/)
     if (pathname === '/') {
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.rewrite(new URL('/mail', request.url));
     }
 
-    // Login page mapping (mail.x-med.co/login)
+    // Login page mapping (mail.x-med.pro/login)
     if (pathname === '/login') {
       return NextResponse.rewrite(new URL('/mail/login', request.url));
     }
@@ -75,7 +75,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Root mapping (admin.x-med.co/)
+    // Root mapping (admin.x-med.pro/)
     if (pathname === '/') {
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
@@ -85,7 +85,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.rewrite(new URL('/admin', request.url));
     }
 
-    // Login page mapping (admin.x-med.co/login)
+    // Login page mapping (admin.x-med.pro/login)
     if (pathname === '/login') {
       return NextResponse.rewrite(new URL('/admin/login', request.url));
     }

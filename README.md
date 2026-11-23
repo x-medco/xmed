@@ -26,7 +26,7 @@ See `docs/ADDING_PRODUCTS.md` and `CLAUDE.md` before asking an AI assistant (or 
 
 1. Push this repo to GitHub.
 2. Import into Vercel → set environment variables from `.env.example` in the Vercel dashboard (never in code).
-3. Point your domain (x-med.co) at the Vercel deployment.
+3. Point your domain (x-med.pro) at the Vercel deployment.
 
 ## Payments
 

@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
                   trackingNumber: 'Pending WhatsApp Payment Setup'
                 });
 
-                const fromAddress = 'X-Med Reagents <sales@x-med.co>';
+                const fromAddress = 'X-Med Reagents <sales@x-med.pro>';
                 const emailSubject = `Order Confirmed: Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
 
                 const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
                     resend_id: resendId
                   });
 
-                // 1.6. Send plain-text new order alert email to info@x-med.co
+                // 1.6. Send plain-text new order alert email to info@x-med.pro
                 try {
                   const notificationSubject = `[New Order Alert] Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
                   const notificationText = 
@@ -160,8 +160,8 @@ export async function POST(req: NextRequest) {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      from: 'X-Med Storefront <info@x-med.co>',
-                      to: ['info@x-med.co'],
+                      from: 'X-Med Storefront <info@x-med.pro>',
+                      to: ['info@x-med.pro'],
                       subject: notificationSubject,
                       text: notificationText
                     })
@@ -172,8 +172,8 @@ export async function POST(req: NextRequest) {
                   await supabaseServer
                     .from('emails')
                     .insert({
-                      sender: 'X-Med Storefront <info@x-med.co>',
-                      recipient: 'info@x-med.co',
+                      sender: 'X-Med Storefront <info@x-med.pro>',
+                      recipient: 'info@x-med.pro',
                       subject: notificationSubject,
                       text_content: notificationText,
                       direction: 'incoming',

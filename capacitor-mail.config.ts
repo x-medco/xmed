@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'XMed Mail',
   webDir: 'out',
   server: {
-    url: 'https://mail.x-med.co',
+    url: 'https://mail.x-med.pro',
     cleartext: true
   }
 };

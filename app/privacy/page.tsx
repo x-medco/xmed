@@ -42,7 +42,7 @@ export default function PrivacyPage() {
 
           <h2 className="text-lg font-bold text-ink font-display">5. Compliance and Rights</h2>
           <p>
-            European Union residents retain all rights under General Data Protection Regulation (GDPR) standards, including the right to inspect, edit, or delete personal account profiles. To delete laboratory credentials, submit a ticket to support@x-med.co.
+            European Union residents retain all rights under General Data Protection Regulation (GDPR) standards, including the right to inspect, edit, or delete personal account profiles. To delete laboratory credentials, submit a ticket to support@x-med.pro.
           </p>
         </div>
       </div>

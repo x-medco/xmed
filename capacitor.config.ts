@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'XMed Admin',
   webDir: 'out',
   server: {
-    url: 'https://admin.x-med.co',
+    url: 'https://admin.x-med.pro',
     cleartext: true
   }
 };

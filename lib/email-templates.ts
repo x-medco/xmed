@@ -182,7 +182,7 @@ const wrapTemplate = (subject: string, contentHtml: string) => `
   <div class="wrapper">
     <div class="container">
       <div class="header">
-        <a href="https://x-med.co" class="logo"><span class="logo-blue">X-</span>MED</a>
+        <a href="https://x-med.pro" class="logo"><span class="logo-blue">X-</span>MED</a>
       </div>
       <div class="content">
         ${contentHtml}
@@ -196,7 +196,7 @@ const wrapTemplate = (subject: string, contentHtml: string) => `
       <div class="footer">
         © 2026 X-Med Research Laboratories. All Rights Reserved.<br>
         This communication is intended for registered researchers in the European Union.<br>
-        Support: <a href="mailto:support@x-med.co">support@x-med.co</a> | <a href="#">Unsubscribe</a>
+        Support: <a href="mailto:support@x-med.pro">support@x-med.pro</a> | <a href="#">Unsubscribe</a>
       </div>
     </div>
   </div>
@@ -239,7 +239,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/cart" class="button">Resume Order</a>
+        <a href="https://x-med.pro/cart" class="button">Resume Order</a>
       </div>
     `)
   },
@@ -270,7 +270,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/cart" class="button">Complete Purchase</a>
+        <a href="https://x-med.pro/cart" class="button">Complete Purchase</a>
       </div>
     `)
   },
@@ -297,7 +297,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/cart?code=LABRUN5" class="button">Apply 5% Off & Checkout</a>
+        <a href="https://x-med.pro/cart?code=LABRUN5" class="button">Apply 5% Off & Checkout</a>
       </div>
     `)
   },
@@ -319,7 +319,7 @@ export const emailAutomations: EmailTemplate[] = [
       </p>
 
       <div class="button-container">
-        <a href="https://x-med.co/cart" class="button">Checkout Vials Now</a>
+        <a href="https://x-med.pro/cart" class="button">Checkout Vials Now</a>
       </div>
     `)
   },
@@ -363,7 +363,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/account" class="button">View Order History</a>
+        <a href="https://x-med.pro/account" class="button">View Order History</a>
       </div>
     `)
   },
@@ -401,7 +401,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/track?id=${vars.trackingNumber || 'SE-9876543-XM'}" class="button">Track Package</a>
+        <a href="https://x-med.pro/track?id=${vars.trackingNumber || 'SE-9876543-XM'}" class="button">Track Package</a>
       </div>
     `)
   },
@@ -427,7 +427,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/track" class="button">View Dispatch Map</a>
+        <a href="https://x-med.pro/track" class="button">View Dispatch Map</a>
       </div>
     `)
   },
@@ -459,7 +459,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/about#guides" class="button">Read Detailed Guides</a>
+        <a href="https://x-med.pro/about#guides" class="button">Read Detailed Guides</a>
       </div>
     `)
   },
@@ -498,7 +498,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/products/tb-500-10mg" class="button">View Study Specifications</a>
+        <a href="https://x-med.pro/products/tb-500-10mg" class="button">View Study Specifications</a>
       </div>
     `)
   },
@@ -520,7 +520,7 @@ export const emailAutomations: EmailTemplate[] = [
       </p>
 
       <div class="button-container">
-        <a href="https://x-med.co/products" class="button">Reorder Reagents</a>
+        <a href="https://x-med.pro/products" class="button">Reorder Reagents</a>
       </div>
     `)
   },
@@ -559,7 +559,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/products/retatrutide-10mg-quick-pen" class="button">Order Pen Device</a>
+        <a href="https://x-med.pro/products/retatrutide-10mg-quick-pen" class="button">Order Pen Device</a>
       </div>
     `)
   },
@@ -599,7 +599,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/products/ghk-cu-50mg" class="button">Buy GHK-Cu</a>
+        <a href="https://x-med.pro/products/ghk-cu-50mg" class="button">Buy GHK-Cu</a>
       </div>
     `)
   },
@@ -621,7 +621,7 @@ export const emailAutomations: EmailTemplate[] = [
       </p>
 
       <div class="button-container">
-        <a href="https://x-med.co/products" class="button">Secure Stock Now</a>
+        <a href="https://x-med.pro/products" class="button">Secure Stock Now</a>
       </div>
     `)
   },
@@ -648,7 +648,7 @@ export const emailAutomations: EmailTemplate[] = [
       </div>
 
       <div class="button-container">
-        <a href="https://x-med.co/products?code=RESTART10" class="button">Redeem Voucher & Shop</a>
+        <a href="https://x-med.pro/products?code=RESTART10" class="button">Redeem Voucher & Shop</a>
       </div>
     `)
   },
@@ -670,7 +670,7 @@ export const emailAutomations: EmailTemplate[] = [
       </p>
 
       <div class="button-container">
-        <a href="https://x-med.co/account#referrals" class="button">Share Referral Link</a>
+        <a href="https://x-med.pro/account#referrals" class="button">Share Referral Link</a>
       </div>
     `)
   }

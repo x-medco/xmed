@@ -199,8 +199,8 @@ export default function AutomationsTab() {
             {/* Template subject & headers summary */}
             <div className="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800/80 rounded-xl p-3.5 mb-4 text-xs font-mono text-slate-500 flex flex-col gap-1">
               <div><strong className="text-slate-800 dark:text-slate-300">Subject:</strong> {selectedTemplate.subject}</div>
-              <div><strong className="text-slate-800 dark:text-slate-300">From:</strong> X-Med Lab Support &lt;support@x-med.co&gt;</div>
-              <div><strong className="text-slate-800 dark:text-slate-300">Reply-To:</strong> support@x-med.co</div>
+              <div><strong className="text-slate-800 dark:text-slate-300">From:</strong> X-Med Lab Support &lt;support@x-med.pro&gt;</div>
+              <div><strong className="text-slate-800 dark:text-slate-300">Reply-To:</strong> support@x-med.pro</div>
             </div>
 
             {/* Responsive Iframe Frame */}

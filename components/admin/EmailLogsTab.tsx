@@ -116,7 +116,7 @@ export default function EmailLogsTab() {
           { label: 'Total Dispatched', value: totalSent, desc: 'Emails sent in current range', icon: Mail, color: 'text-blue-600', bgColor: 'bg-blue-50/50 dark:bg-blue-950/10' },
           { label: 'Delivery Rate', value: `${deliveryRate.toFixed(1)}%`, desc: `${totalDelivered} successfully delivered`, icon: CheckCircle, color: 'text-emerald-600', bgColor: 'bg-emerald-50/50 dark:bg-emerald-950/10' },
           { label: 'Avg. Open Rate', value: `${openRate.toFixed(1)}%`, desc: `${totalOpened} opened by clients`, icon: Eye, color: 'text-indigo-600', bgColor: 'bg-indigo-50/50 dark:bg-indigo-950/10' },
-          { label: 'Avg. Click Rate', value: `${clickRate.toFixed(1)}%`, desc: `${totalClicked} visited x-med.co`, icon: MousePointerClick, color: 'text-violet-600', bgColor: 'bg-violet-50/50 dark:bg-violet-950/10' }
+          { label: 'Avg. Click Rate', value: `${clickRate.toFixed(1)}%`, desc: `${totalClicked} visited x-med.pro`, icon: MousePointerClick, color: 'text-violet-600', bgColor: 'bg-violet-50/50 dark:bg-violet-950/10' }
         ].map((stat, i) => (
           <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 p-5 rounded-2xl shadow-sm flex items-start justify-between">
             <div>

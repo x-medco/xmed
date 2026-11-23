@@ -33,10 +33,10 @@ export interface Product {
 
 export const siteConfig = {
   "name": "X-Med",
-  "domain": "https://x-med.co",
+  "domain": "https://x-med.pro",
   "tagline": "Research-grade peptides, batch-tested and shipped across the EU.",
   "description": "X-Med supplies research peptides and compounds for laboratory and research use, with third-party purity testing, discreet EU shipping, and every vial paired with free bacteriostatic water.",
-  "supportEmail": "support@x-med.co",
+  "supportEmail": "support@x-med.pro",
   "disclaimer": "All products sold by X-Med are intended strictly for laboratory and in-vitro research use by qualified individuals and institutions. They are not drugs, food, or cosmetics, are not for human or animal consumption, and are not evaluated or approved for the diagnosis, treatment, cure, or prevention of any disease. Nothing on this site constitutes medical advice."
 };
 

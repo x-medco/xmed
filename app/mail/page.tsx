@@ -51,7 +51,7 @@ const DEFAULT_MOCK_EMAILS: Email[] = [
   {
     id: 'mock-1',
     sender: 'Dr. Ryan Vance <dr.vance@clinic.org>',
-    recipient: 'support@x-med.co',
+    recipient: 'support@x-med.pro',
     subject: 'Inquiry about PT-141 peptide reconstitution and stability',
     text_content: 'Hello X-Med Support,\n\nI am preparing a research protocol using your PT-141. Could you confirm the recommended reconstitution volume of bacteriostatic water for the 10mg vials? Also, what is the expected stability window when stored at 4 degrees C post-reconstitution?\n\nThank you,\nDr. Ryan Vance',
     html_content: '<p>Hello X-Med Support,</p><p>I am preparing a research protocol using your PT-141. Could you confirm the recommended reconstitution volume of bacteriostatic water for the 10mg vials? Also, what is the expected stability window when stored at 4 degrees C post-reconstitution?</p><p>Thank you,<br/><strong>Dr. Ryan Vance</strong></p>',
@@ -63,7 +63,7 @@ const DEFAULT_MOCK_EMAILS: Email[] = [
   {
     id: 'mock-2',
     sender: 'Sarah Jenkins <sarah.j@fitlife.com>',
-    recipient: 'sales@x-med.co',
+    recipient: 'sales@x-med.pro',
     subject: 'Question on BOGO buy-one-get-one-free shipping times',
     text_content: 'Hi! I saw the BOGO deal on your website for Ipamorelin. If I order today, does the free vial ship in the same package, or does it arrive separately? Also, do you ship to Canada?\n\nBest,\nSarah',
     html_content: '<p>Hi! I saw the BOGO deal on your website for Ipamorelin. If I order today, does the free vial ship in the same package, or does it arrive separately? Also, do you ship to Canada?</p><p>Best,<br/>Sarah</p>',
@@ -75,7 +75,7 @@ const DEFAULT_MOCK_EMAILS: Email[] = [
   {
     id: 'mock-3',
     sender: 'Marcus Cole <m.cole@biotech.co>',
-    recipient: 'info@x-med.co',
+    recipient: 'info@x-med.pro',
     subject: 'Wholesale order pricing for BPC-157 10mg and TB-500',
     text_content: 'Hello,\n\nI represent a local research facility. We are looking to buy BPC-157 and TB-500 in bulk (50+ vials of each). Do you offer wholesale tier rates? Attached is our list of monthly requirements.\n\nRegards,\nMarcus',
     html_content: '<p>Hello,</p><p>I represent a local research facility. We are looking to buy BPC-157 and TB-500 in bulk (50+ vials of each). Do you offer wholesale tier rates? Attached is our list of monthly requirements.</p><p>Regards,<br/>Marcus</p>',
@@ -297,9 +297,9 @@ export default function MailDashboard() {
 
     if (!isFolderMatch) return false;
 
-    // Filter by selected account (info@x-med.co, sales@x-med.co, support@x-med.co)
+    // Filter by selected account (info@x-med.pro, sales@x-med.pro, support@x-med.pro)
     if (selectedAccount !== 'all') {
-      const targetAddress = `${selectedAccount}@x-med.co`;
+      const targetAddress = `${selectedAccount}@x-med.pro`;
       if (activeFolder === 'inbox') {
         // Incoming: check if recipient is target
         if (!email.recipient.toLowerCase().includes(targetAddress)) {
@@ -364,7 +364,7 @@ export default function MailDashboard() {
       const isIncomingUnread = e.direction === 'incoming' && e.status === 'unread';
       if (!isIncomingUnread) return false;
       if (account === 'all') return true;
-      return e.recipient.toLowerCase().includes(`${account}@x-med.co`);
+      return e.recipient.toLowerCase().includes(`${account}@x-med.pro`);
     }).length;
   };
 
@@ -446,9 +446,9 @@ export default function MailDashboard() {
             <div className="space-y-1">
               {[
                 { id: 'all', email: 'All Accounts' },
-                { id: 'info', email: 'info@x-med.co' },
-                { id: 'sales', email: 'sales@x-med.co' },
-                { id: 'support', email: 'support@x-med.co' }
+                { id: 'info', email: 'info@x-med.pro' },
+                { id: 'sales', email: 'sales@x-med.pro' },
+                { id: 'support', email: 'support@x-med.pro' }
               ].map(acc => {
                 const count = getUnreadCount(acc.id as any);
                 return (
@@ -886,9 +886,9 @@ export default function MailDashboard() {
                     onChange={e => setComposeFrom(e.target.value as any)}
                     className="bg-transparent text-sm text-emerald-600 dark:text-emerald-450 border-none outline-none focus:ring-0 focus:outline-none cursor-pointer font-bold pr-6"
                   >
-                    <option value="info" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">info@x-med.co</option>
-                    <option value="sales" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">sales@x-med.co</option>
-                    <option value="support" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">support@x-med.co</option>
+                    <option value="info" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">info@x-med.pro</option>
+                    <option value="sales" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">sales@x-med.pro</option>
+                    <option value="support" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">support@x-med.pro</option>
                   </select>
                 </div>
  

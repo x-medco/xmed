@@ -124,7 +124,7 @@ function getMarketingEmailHtml(name, stats) {
   <!-- Message Body Part 2 -->
   <tr>
     <td align="left" style="padding:20px 40px 10px 40px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#dfe6f7;">
-      We've also refreshed things on our end &mdash; <strong>x-med.co</strong> is live with a cleaner look, if you'd like to take a peek.<br><br>
+      We've also refreshed things on our end &mdash; <strong>x-med.pro</strong> is live with a cleaner look, if you'd like to take a peek.<br><br>
       Thank you for trusting us with your research needs. We're here if you need anything.
     </td>
   </tr>
@@ -133,20 +133,20 @@ function getMarketingEmailHtml(name, stats) {
   <tr>
     <td align="center" style="padding:28px 20px 6px 20px;">
       <!--[if mso]>
-      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://x-med.co?utm_source=email&utm_medium=campaign&utm_campaign=relaunch_2026" style="height:50px;v-text-anchor:middle;width:280px;" arcsize="50%" strokecolor="#3b6bff" fillcolor="#3b6bff">
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://x-med.pro?utm_source=email&utm_medium=campaign&utm_campaign=relaunch_2026" style="height:50px;v-text-anchor:middle;width:280px;" arcsize="50%" strokecolor="#3b6bff" fillcolor="#3b6bff">
       <w:anchorlock/>
       <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">EXPLORE THE NEW WEBSITE &#8594;</center>
       </v:roundrect>
       <![endif]-->
       <!--[if !mso]><!-- -->
-      <a href="https://x-med.co?utm_source=email&utm_medium=campaign&utm_campaign=relaunch_2026" target="_blank" style="background-color:#3b6bff; background-image:linear-gradient(100deg,#3b6bff,#7c5cff); border-radius:30px; color:#ffffff; display:inline-block; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold; letter-spacing:1px; padding:16px 32px; text-decoration:none;">EXPLORE THE NEW WEBSITE &#8594;</a>
+      <a href="https://x-med.pro?utm_source=email&utm_medium=campaign&utm_campaign=relaunch_2026" target="_blank" style="background-color:#3b6bff; background-image:linear-gradient(100deg,#3b6bff,#7c5cff); border-radius:30px; color:#ffffff; display:inline-block; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold; letter-spacing:1px; padding:16px 32px; text-decoration:none;">EXPLORE THE NEW WEBSITE &#8594;</a>
       <!--<![endif]-->
     </td>
   </tr>
 
   <!-- URL -->
   <tr>
-    <td align="center" style="padding:16px 20px 0 20px; font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:bold; color:#5fa8ff;">x-med.co</td>
+    <td align="center" style="padding:16px 20px 0 20px; font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:bold; color:#5fa8ff;">x-med.pro</td>
   </tr>
 
   <!-- Divider -->
@@ -258,7 +258,7 @@ async function sendEmailViaResend(apiKey, toEmail, name, html) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'X-Med Reagents <sales@x-med.co>',
+        from: 'X-Med Reagents <sales@x-med.pro>',
         to: [toEmail],
         subject: 'Quality You Can Trust | X-MED Update',
         html: html

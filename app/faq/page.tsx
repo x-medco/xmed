@@ -10,7 +10,7 @@ export default function FAQPage() {
       title: 'Purity & Quality Verification',
       faqs: [
         { q: 'What quality grade are your products?', a: 'All compounds are manufactured to research-grade specifications, targeting a minimum purity index of 99.0%+. Synthesis folding and exact amino-acid counts are verified per-batch.' },
-        { q: 'How do I access the Certificate of Analysis (CoA) for my batch?', a: 'Registered researchers can request batch-specific HPLC analysis reports. Simply email support@x-med.co referencing your order ID or download templates from your Account Hub.' },
+        { q: 'How do I access the Certificate of Analysis (CoA) for my batch?', a: 'Registered researchers can request batch-specific HPLC analysis reports. Simply email support@x-med.pro referencing your order ID or download templates from your Account Hub.' },
         { q: 'Why is there a compliance warning on all products?', a: 'Our compounds are synthetic chemical materials intended strictly for laboratory and in-vitro testing. They are not approved for human or veterinary use. Labels keep laboratory compliance clear.' }
       ]
     },
