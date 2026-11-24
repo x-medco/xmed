@@ -17,7 +17,7 @@ export default function Header() {
   const isMailSubdomain = typeof window !== 'undefined' && 
     (window.location.hostname.startsWith('mail.') || window.location.hostname.startsWith('mail.localhost'));
 
-  if (pathname.startsWith('/admin') || pathname.startsWith('/mail') || isAdminSubdomain || isMailSubdomain) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/mail') || pathname.startsWith('/verify') || isAdminSubdomain || isMailSubdomain) {
     return null;
   }
   const [scrolled, setScrolled] = useState(false);

@@ -31,11 +31,27 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   manifest: '/manifest.json',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'none',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+      <head>
+        <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
+      </head>
       <body className="font-body antialiased transition-colors duration-250">
         <ThemeProvider>
           <CartProvider>

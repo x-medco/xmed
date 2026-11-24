@@ -1,150 +1,217 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyHumanSession, HUMAN_COOKIE_NAME } from '@/lib/security/session';
+
+// Known AI crawler and automated scraping User-Agents
+const BLOCKED_USER_AGENTS = [
+  'gptbot',
+  'chatgpt-user',
+  'oai-searchbot',
+  'claudebot',
+  'claude-user',
+  'claude-searchbot',
+  'perplexitybot',
+  'google-extended',
+  'bytespider',
+  'ccbot',
+  'diffbot',
+  'facebookexternalhit',
+  'meta-externalagent',
+  'amazonbot',
+  'cohere-ai',
+  'applebot-extended',
+  'scrapy',
+  'wget',
+  'python-requests',
+  'aiohttp',
+  'httpx',
+  'httpclient',
+  'go-http-client',
+];
+
+// Minimal exemptions strictly required for authentication & challenge rendering
+const EXEMPT_PATHS = [
+  '/verify',
+  '/api/verify-human',
+  '/robots.txt',
+  '/manifest.json',
+  '/manifest-mail.json',
+  '/favicon.ico',
+];
+
+/**
+ * Apply anti-indexing and security headers to any outgoing response
+ */
+function applySecurityHeaders(res: NextResponse): NextResponse {
+  res.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  return res;
+}
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
   const hostname = request.headers.get('host') || '';
-
-  // Define admin subdomain conditions (supports localhost for local testing)
-  const isAdminSubdomain = hostname.startsWith('admin.x-med.pro') || hostname.startsWith('admin.localhost:3000');
-  
-  // Define mail subdomain conditions
-  const isMailSubdomain = hostname.startsWith('mail.x-med.pro') || hostname.startsWith('mail.localhost:3000');
+  const userAgent = (request.headers.get('user-agent') || '').toLowerCase();
 
   // ==========================================
-  // A. MAIL SUBDOMAIN ROUTING CONTROL
+  // 1. LAYER 1: BLOCK UNWANTED AI BOTS & SCRAPERS
   // ==========================================
+  const isBlockedBot = BLOCKED_USER_AGENTS.some((bot) => userAgent.includes(bot));
+  if (isBlockedBot) {
+    return applySecurityHeaders(
+      new NextResponse('Forbidden: Automated access prohibited.', { status: 403 })
+    );
+  }
+
+  // ==========================================
+  // 2. LAYER 2: EXEMPTIONS CHECK
+  // ==========================================
+  const isExempt = 
+    EXEMPT_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ||
+    pathname.startsWith('/_next/static') ||
+    pathname.startsWith('/_next/image');
+
+  if (isExempt) {
+    return applySecurityHeaders(NextResponse.next());
+  }
+
+  // ==========================================
+  // 3. LAYER 3: HUMAN SESSION VERIFICATION
+  // ==========================================
+  const humanToken = request.cookies.get(HUMAN_COOKIE_NAME)?.value;
+  const isVerifiedHuman = await verifyHumanSession(humanToken);
+
+  if (!isVerifiedHuman) {
+    // If request is an API endpoint, reject with HTTP 403
+    if (pathname.startsWith('/api')) {
+      return applySecurityHeaders(
+        NextResponse.json(
+          { error: 'Human verification required' },
+          { status: 403 }
+        )
+      );
+    }
+
+    // If request is a media asset or file, reject with HTTP 403
+    if (pathname.startsWith('/images/') || pathname.endsWith('.png') || pathname.endsWith('.jpg') || pathname.endsWith('.webp') || pathname.endsWith('.pdf')) {
+      return applySecurityHeaders(
+        new NextResponse('Forbidden: Human verification required to access assets.', { status: 403 })
+      );
+    }
+
+    // Normal page request: redirect to minimal verification gate
+    const targetUrl = encodeURIComponent(`${pathname}${search}`);
+    const verifyUrl = new URL(`/verify?next=${targetUrl}`, request.url);
+    return applySecurityHeaders(NextResponse.redirect(verifyUrl));
+  }
+
+  // ==========================================
+  // 4. SUBDOMAIN & ADMIN/MAIL ROUTING
+  // ==========================================
+  const isAdminSubdomain = hostname.startsWith('admin.x-med.pro') || hostname.startsWith('admin.localhost');
+  const isMailSubdomain = hostname.startsWith('mail.x-med.pro') || hostname.startsWith('mail.localhost');
+
+  // --- MAIL SUBDOMAIN ---
   if (isMailSubdomain) {
-    // Route manifest request for mail subdomain to correct manifest config
     if (pathname === '/manifest.json') {
-      return NextResponse.rewrite(new URL('/manifest-mail.json', request.url));
+      return applySecurityHeaders(NextResponse.rewrite(new URL('/manifest-mail.json', request.url)));
     }
 
-    // Allow static files, assets, images and API routes to load normally
-    const isAssetOrApi = 
-      pathname.startsWith('/api') || 
-      pathname.startsWith('/_next') || 
-      pathname.includes('.');
-      
-    if (isAssetOrApi) {
-      return NextResponse.next();
+    if (pathname.startsWith('/api') || pathname.includes('.')) {
+      return applySecurityHeaders(NextResponse.next());
     }
 
-    // Root mapping (mail.x-med.pro/)
     if (pathname === '/') {
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
-        // Rewrite to login page internally to keep clean subdomain URL structure
-        return NextResponse.rewrite(new URL('/mail/login', request.url));
+        return applySecurityHeaders(NextResponse.rewrite(new URL('/mail/login', request.url)));
       }
-      return NextResponse.rewrite(new URL('/mail', request.url));
+      return applySecurityHeaders(NextResponse.rewrite(new URL('/mail', request.url)));
     }
 
-    // Login page mapping (mail.x-med.pro/login)
     if (pathname === '/login') {
-      return NextResponse.rewrite(new URL('/mail/login', request.url));
+      return applySecurityHeaders(NextResponse.rewrite(new URL('/mail/login', request.url)));
     }
 
-    // Handle standard /mail paths, enforcing auth rules
     if (pathname.startsWith('/mail')) {
       if (pathname === '/mail/login') {
-        return NextResponse.next();
+        return applySecurityHeaders(NextResponse.next());
       }
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return applySecurityHeaders(NextResponse.redirect(new URL('/login', request.url)));
       }
-      return NextResponse.next();
+      return applySecurityHeaders(NextResponse.next());
     }
 
-    // Strict isolation: Block access to customer storefront pages on mail subdomain
-    return NextResponse.redirect(new URL('/', request.url));
+    return applySecurityHeaders(NextResponse.redirect(new URL('/', request.url)));
   }
 
-  // ==========================================
-  // B. ADMIN SUBDOMAIN ROUTING CONTROL
-  // ==========================================
+  // --- ADMIN SUBDOMAIN ---
   if (isAdminSubdomain) {
-    // Allow static files, assets, images and API routes to load normally
-    const isAssetOrApi = 
-      pathname.startsWith('/api') || 
-      pathname.startsWith('/_next') || 
-      pathname.includes('.');
-      
-    if (isAssetOrApi) {
-      return NextResponse.next();
+    if (pathname.startsWith('/api') || pathname.includes('.')) {
+      return applySecurityHeaders(NextResponse.next());
     }
 
-    // Root mapping (admin.x-med.pro/)
     if (pathname === '/') {
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
-        // Rewrite to login page internally to keep clean subdomain URL structure
-        return NextResponse.rewrite(new URL('/admin/login', request.url));
+        return applySecurityHeaders(NextResponse.rewrite(new URL('/admin/login', request.url)));
       }
-      return NextResponse.rewrite(new URL('/admin', request.url));
+      return applySecurityHeaders(NextResponse.rewrite(new URL('/admin', request.url)));
     }
 
-    // Login page mapping (admin.x-med.pro/login)
     if (pathname === '/login') {
-      return NextResponse.rewrite(new URL('/admin/login', request.url));
+      return applySecurityHeaders(NextResponse.rewrite(new URL('/admin/login', request.url)));
     }
 
-    // Handle standard /admin paths, enforcing auth rules
     if (pathname.startsWith('/admin')) {
       if (pathname === '/admin/login') {
-        return NextResponse.next();
+        return applySecurityHeaders(NextResponse.next());
       }
       const adminAuth = request.cookies.get('admin_auth')?.value;
       if (adminAuth !== 'true') {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return applySecurityHeaders(NextResponse.redirect(new URL('/login', request.url)));
       }
-      return NextResponse.next();
+      return applySecurityHeaders(NextResponse.next());
     }
 
-    // Strict isolation: Block access to customer storefront pages on admin subdomain
-    // Redirect customer pages (like /products, /cart, /checkout) back to dashboard root
-    return NextResponse.redirect(new URL('/', request.url));
+    return applySecurityHeaders(NextResponse.redirect(new URL('/', request.url)));
   }
 
-  // ==========================================
-  // C. MAIN STOREFRONT DOMAIN ROUTING CONTROL
-  // ==========================================
-  
-  // Handle direct /admin path on main domain with auth protection
+  // --- MAIN DOMAIN ADMIN & MAIL GUARDS ---
   if (pathname.startsWith('/admin')) {
     if (pathname === '/admin/login') {
-      return NextResponse.next();
+      return applySecurityHeaders(NextResponse.next());
     }
     const adminAuth = request.cookies.get('admin_auth')?.value;
     if (adminAuth !== 'true') {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL('/admin/login', request.url)));
     }
-    return NextResponse.next();
+    return applySecurityHeaders(NextResponse.next());
   }
 
-  // Handle direct /mail path on main domain with auth protection
   if (pathname.startsWith('/mail')) {
     if (pathname === '/mail/login') {
-      return NextResponse.next();
+      return applySecurityHeaders(NextResponse.next());
     }
     const adminAuth = request.cookies.get('admin_auth')?.value;
     if (adminAuth !== 'true') {
-      return NextResponse.redirect(new URL('/mail/login', request.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL('/mail/login', request.url)));
     }
-    return NextResponse.next();
+    return applySecurityHeaders(NextResponse.next());
   }
 
-  // MAINTENANCE MODE GUARD FOR PUBLIC PAGES
+  // --- MAINTENANCE MODE GUARD ---
   const isPublicPage = 
     !pathname.startsWith('/api') && 
-    !pathname.startsWith('/_next') && 
     !pathname.includes('.') && 
     pathname !== '/maintenance';
 
   if (isPublicPage) {
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vhqzdmucrbcdubscyrpl.supabase.co';
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whqadmusrbcdubsycypt.supabase.co';
       const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
       
       const restUrl = `${supabaseUrl}/rest/v1/site_settings?key=eq.maintenance_mode&select=value`;
@@ -153,7 +220,7 @@ export async function middleware(request: NextRequest) {
           'apikey': anonKey,
           'Authorization': `Bearer ${anonKey}`
         },
-        next: { revalidate: 15 } // Cache check for 15 seconds to avoid DB pounding
+        next: { revalidate: 15 }
       });
 
       if (res.ok) {
@@ -162,26 +229,25 @@ export async function middleware(request: NextRequest) {
 
         if (isMaintenance) {
           const maintenanceUrl = new URL('/maintenance', request.url);
-          return NextResponse.rewrite(maintenanceUrl);
+          return applySecurityHeaders(NextResponse.rewrite(maintenanceUrl));
         }
       }
     } catch (err) {
-      console.error("Maintenance middleware check failed:", err);
+      console.error('Maintenance middleware check error:', err);
     }
   }
 
-  return NextResponse.next();
+  return applySecurityHeaders(NextResponse.next());
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
+     * Match all request paths except:
+     * - _next/static (static JS/CSS)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - favicon.ico (favicon)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
