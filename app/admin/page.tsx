@@ -179,8 +179,8 @@ export default function AdminPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold font-display transition-all ${
                   isActive 
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10' 
-                    : 'text-slate-450 hover:bg-slate-50 hover:text-ink dark:hover:bg-slate-850'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/80'
                 }`}
               >
                 <div className="flex items-center gap-3">
