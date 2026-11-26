@@ -2,14 +2,31 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyHumanSession, HUMAN_COOKIE_NAME } from '@/lib/security/session';
 
-// Known AI crawler and automated scraping User-Agents
+// Known Search Engine Crawlers, AI Scrapers, and Automated User-Agents
 const BLOCKED_USER_AGENTS = [
+  // Search Engine Crawlers
+  'googlebot',
+  'google-inspectiontool',
+  'googleother',
+  'bingbot',
+  'msnbot',
+  'yandex',
+  'baiduspider',
+  'duckduckbot',
+  'slurp',
+  'sogou',
+  'exabot',
+  'seznambot',
+  'petalbot',
+
+  // AI Bots & LLM Web Scrapers
   'gptbot',
   'chatgpt-user',
   'oai-searchbot',
   'claudebot',
   'claude-user',
   'claude-searchbot',
+  'anthropic-ai',
   'perplexitybot',
   'google-extended',
   'bytespider',
@@ -19,7 +36,24 @@ const BLOCKED_USER_AGENTS = [
   'meta-externalagent',
   'amazonbot',
   'cohere-ai',
+  'applebot',
   'applebot-extended',
+  'omgilibot',
+  'deepseek',
+
+  // SEO Scrapers & Web Archives
+  'semrushbot',
+  'ahrefsbot',
+  'mj12bot',
+  'dotbot',
+  'rogerbot',
+  'screaming frog',
+  'blexbot',
+  'zoominfobot',
+  'ia_archiver',
+  'archive.org_bot',
+
+  // Automated Scripting Libraries
   'scrapy',
   'wget',
   'python-requests',
