@@ -134,15 +134,19 @@ export async function POST(req: NextRequest) {
                     resend_id: resendId
                   });
 
-                // 1.6. Send plain-text new order alert email to info@x-med.pro
+                // 1.6. Send new order alert email to admin & xmedeurope@gmail.com
                 try {
-                  const notificationSubject = `[New Order Alert] Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
+                  const invoiceTag = (dbOrderId || 'demo').substring(0, 8).toUpperCase();
+                  const notificationSubject = `[New Order Alert] Invoice #${invoiceTag} - €${amount.toFixed(2)}`;
+                  const cleanPhone = (customer.phone || '').replace(/[^0-9]/g, '');
+                  const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : '';
+
                   const notificationText = 
                     `New Order Received!\n\n` +
-                    `Invoice ID: #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}\n` +
+                    `Invoice ID: #${invoiceTag}\n` +
                     `Customer Name: ${customer.name}\n` +
                     `Email: ${customer.email}\n` +
-                    `WhatsApp: ${customer.phone || 'N/A'}\n` +
+                    `WhatsApp: ${customer.phone || 'N/A'}${waLink ? ` (${waLink})` : ''}\n` +
                     `Total Amount: €${amount.toFixed(2)}\n\n` +
                     `Shipping Details:\n` +
                     `Address: ${customer.address}\n` +
@@ -152,7 +156,43 @@ export async function POST(req: NextRequest) {
                     `Items Ordered:\n` +
                     `${productSummaryStr}\n`;
 
-                  // Send to info mailbox via Resend
+                  const notificationHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #1e293b;">
+                      <div style="border-bottom: 2px solid #2563eb; padding-bottom: 14px; margin-bottom: 20px;">
+                        <h2 style="color: #0f172a; margin: 0 0 4px 0; font-size: 22px; font-weight: 800;">🎉 New Order Received!</h2>
+                        <p style="color: #64748b; margin: 0; font-size: 14px;">Invoice: <strong style="color: #2563eb;">#${invoiceTag}</strong></p>
+                      </div>
+
+                      <div style="background-color: #f8fafc; padding: 18px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #edf2f7;">
+                        <h3 style="color: #0f172a; margin: 0 0 12px 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Customer & Payment</h3>
+                        <p style="margin: 6px 0; font-size: 14px;"><strong>Customer:</strong> ${customer.name}</p>
+                        <p style="margin: 6px 0; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${customer.email}" style="color: #2563eb; text-decoration: underline;">${customer.email}</a></p>
+                        <p style="margin: 6px 0; font-size: 14px;">
+                          <strong>WhatsApp:</strong> 
+                          ${customer.phone ? `<a href="${waLink}" style="display: inline-block; background-color: #25D366; color: #ffffff; padding: 3px 10px; border-radius: 6px; text-decoration: none; font-weight: 700; margin-left: 6px;">Chat on WhatsApp (${customer.phone})</a>` : 'N/A'}
+                        </p>
+                        <p style="margin: 10px 0 0 0; font-size: 16px;"><strong>Total Amount:</strong> <span style="font-size: 18px; font-weight: 800; color: #059669;">€${amount.toFixed(2)}</span></p>
+                      </div>
+
+                      <div style="background-color: #f8fafc; padding: 18px; border-radius: 10px; margin-bottom: 16px; border: 1px solid #edf2f7;">
+                        <h3 style="color: #0f172a; margin: 0 0 10px 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Shipping Destination</h3>
+                        <p style="margin: 4px 0; font-size: 14px;">${customer.address}</p>
+                        <p style="margin: 4px 0; font-size: 14px;">${customer.city}, ${customer.postcode}</p>
+                        <p style="margin: 4px 0; font-size: 14px; font-weight: 600;">${customer.country}</p>
+                      </div>
+
+                      <div style="background-color: #f8fafc; padding: 18px; border-radius: 10px; margin-bottom: 24px; border: 1px solid #edf2f7;">
+                        <h3 style="color: #0f172a; margin: 0 0 10px 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Items Ordered</h3>
+                        <p style="margin: 4px 0; font-size: 14px; line-height: 1.6; color: #0f172a; font-weight: 600;">${productSummaryStr}</p>
+                      </div>
+
+                      <div style="text-align: center; padding-top: 8px;">
+                        <a href="https://x-med.pro/admin" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px;">Open Admin Dashboard</a>
+                      </div>
+                    </div>
+                  `;
+
+                  // Send order alert to xmedeurope@gmail.com and info@x-med.pro via Resend
                   await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
@@ -160,22 +200,24 @@ export async function POST(req: NextRequest) {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      from: 'X-Med Storefront <info@x-med.pro>',
-                      to: ['info@x-med.pro'],
+                      from: 'X-Med Orders <info@x-med.pro>',
+                      to: ['xmedeurope@gmail.com', 'info@x-med.pro'],
                       subject: notificationSubject,
-                      text: notificationText
+                      text: notificationText,
+                      html: notificationHtml
                     })
                   });
-                  console.log(`[Resend] Admin notification email sent successfully.`);
+                  console.log(`[Resend] Admin notification email sent successfully to xmedeurope@gmail.com and info@x-med.pro.`);
 
                   // Insert directly into DB as incoming message to bypass webhook latency
                   await supabaseServer
                     .from('emails')
                     .insert({
                       sender: 'X-Med Storefront <info@x-med.pro>',
-                      recipient: 'info@x-med.pro',
+                      recipient: 'xmedeurope@gmail.com',
                       subject: notificationSubject,
                       text_content: notificationText,
+                      html_content: notificationHtml,
                       direction: 'incoming',
                       status: 'unread'
                     });
