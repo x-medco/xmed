@@ -77,40 +77,16 @@ export async function middleware(request: NextRequest) {
   }
 
   // ==========================================
-  // 3. LAYER 3: HUMAN SESSION VERIFICATION
-  // ==========================================
-  const humanToken = request.cookies.get(HUMAN_COOKIE_NAME)?.value;
-  const isVerifiedHuman = await verifyHumanSession(humanToken);
-
-  if (!isVerifiedHuman) {
-    // If request is an API endpoint, reject with HTTP 403
-    if (pathname.startsWith('/api')) {
-      return applySecurityHeaders(
-        NextResponse.json(
-          { error: 'Human verification required' },
-          { status: 403 }
-        )
-      );
-    }
-
-    // If request is a media asset or file, reject with HTTP 403
-    if (pathname.startsWith('/images/') || pathname.endsWith('.png') || pathname.endsWith('.jpg') || pathname.endsWith('.webp') || pathname.endsWith('.pdf')) {
-      return applySecurityHeaders(
-        new NextResponse('Forbidden: Human verification required to access assets.', { status: 403 })
-      );
-    }
-
-    // Normal page request: redirect to minimal verification gate
-    const targetUrl = encodeURIComponent(`${pathname}${search}`);
-    const verifyUrl = new URL(`/verify?next=${targetUrl}`, request.url);
-    return applySecurityHeaders(NextResponse.redirect(verifyUrl));
-  }
-
-  // ==========================================
-  // 4. SUBDOMAIN & ADMIN/MAIL ROUTING
+  // 3. LAYER 3: SUBDOMAIN & ADMIN/MAIL ROUTING
+  // (Always accessible to administrators via their own authentication)
   // ==========================================
   const isAdminSubdomain = hostname.startsWith('admin.x-med.pro') || hostname.startsWith('admin.localhost');
   const isMailSubdomain = hostname.startsWith('mail.x-med.pro') || hostname.startsWith('mail.localhost');
+
+  // Allow admin and mail APIs through to their own handlers
+  if (pathname.startsWith('/api/admin') || pathname.startsWith('/api/mail')) {
+    return applySecurityHeaders(NextResponse.next());
+  }
 
   // --- MAIL SUBDOMAIN ---
   if (isMailSubdomain) {
@@ -180,7 +156,7 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(NextResponse.redirect(new URL('/', request.url)));
   }
 
-  // --- MAIN DOMAIN ADMIN & MAIL GUARDS ---
+  // --- MAIN DOMAIN DIRECT /admin PATH ---
   if (pathname.startsWith('/admin')) {
     if (pathname === '/admin/login') {
       return applySecurityHeaders(NextResponse.next());
@@ -192,6 +168,7 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(NextResponse.next());
   }
 
+  // --- MAIN DOMAIN DIRECT /mail PATH ---
   if (pathname.startsWith('/mail')) {
     if (pathname === '/mail/login') {
       return applySecurityHeaders(NextResponse.next());
@@ -203,7 +180,44 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(NextResponse.next());
   }
 
-  // --- MAINTENANCE MODE GUARD ---
+  // ==========================================
+  // 4. LAYER 4: HUMAN SESSION VERIFICATION
+  // (Active when TURNSTILE_ENABLED is 'true' in environment)
+  // ==========================================
+  const isTurnstileEnabled = process.env.TURNSTILE_ENABLED === 'true';
+
+  if (isTurnstileEnabled) {
+    const humanToken = request.cookies.get(HUMAN_COOKIE_NAME)?.value;
+    const isVerifiedHuman = await verifyHumanSession(humanToken);
+
+    if (!isVerifiedHuman) {
+      // If request is an API endpoint, reject with HTTP 403
+      if (pathname.startsWith('/api')) {
+        return applySecurityHeaders(
+          NextResponse.json(
+            { error: 'Human verification required' },
+            { status: 403 }
+          )
+        );
+      }
+
+      // If request is a media asset or file, reject with HTTP 403
+      if (pathname.startsWith('/images/') || pathname.endsWith('.png') || pathname.endsWith('.jpg') || pathname.endsWith('.webp') || pathname.endsWith('.pdf')) {
+        return applySecurityHeaders(
+          new NextResponse('Forbidden: Human verification required to access assets.', { status: 403 })
+        );
+      }
+
+      // Normal storefront page request: redirect to minimal verification gate
+      const targetUrl = encodeURIComponent(`${pathname}${search}`);
+      const verifyUrl = new URL(`/verify?next=${targetUrl}`, request.url);
+      return applySecurityHeaders(NextResponse.redirect(verifyUrl));
+    }
+  }
+
+  // ==========================================
+  // 5. MAINTENANCE MODE GUARD
+  // ==========================================
   const isPublicPage = 
     !pathname.startsWith('/api') && 
     !pathname.includes('.') && 
@@ -211,7 +225,7 @@ export async function middleware(request: NextRequest) {
 
   if (isPublicPage) {
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whqadmusrbcdubsycypt.supabase.co';
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vhqzdmucrbcdubscyrpl.supabase.co';
       const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
       
       const restUrl = `${supabaseUrl}/rest/v1/site_settings?key=eq.maintenance_mode&select=value`;

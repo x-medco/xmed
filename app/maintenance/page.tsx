@@ -47,7 +47,7 @@ export default function MaintenancePage() {
 
         {/* Footer Support */}
         <div className="text-xs text-slate-500 font-mono">
-          Urgent research support: <a href="mailto:support@x-med.pro" className="text-blue-400 hover:underline">support@x-med.pro</a>
+          Urgent research support: <a href="mailto:info@x-med.pro" className="text-blue-400 hover:underline">info@x-med.pro</a>
         </div>
       </div>
     </div>

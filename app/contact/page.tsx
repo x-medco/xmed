@@ -61,7 +61,7 @@ export default function ContactPage() {
                   <Mail className="w-4 h-4 text-blue-600" />
                   <div>
                     <div className="text-xs text-slate-500 font-mono">SUPPORT EMAIL</div>
-                    <a href="mailto:support@x-med.pro" className="hover:underline text-ink font-medium">support@x-med.pro</a>
+                    <a href="mailto:info@x-med.pro" className="hover:underline text-ink font-medium">info@x-med.pro</a>
                   </div>
                 </div>
                 

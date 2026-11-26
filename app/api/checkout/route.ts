@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
                   trackingNumber: 'Pending WhatsApp Payment Setup'
                 });
 
-                const fromAddress = 'X-Med Reagents <sales@x-med.pro>';
+                const fromAddress = 'X-Med <info@x-med.pro>';
                 const emailSubject = `Order Confirmed: Invoice #${(dbOrderId || 'demo').substring(0, 8).toUpperCase()}`;
 
                 const emailResponse = await fetch('https://api.resend.com/emails', {

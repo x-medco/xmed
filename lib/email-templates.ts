@@ -196,7 +196,7 @@ const wrapTemplate = (subject: string, contentHtml: string) => `
       <div class="footer">
         © 2026 X-Med Research Laboratories. All Rights Reserved.<br>
         This communication is intended for registered researchers in the European Union.<br>
-        Support: <a href="mailto:support@x-med.pro">support@x-med.pro</a> | <a href="#">Unsubscribe</a>
+        Support: <a href="mailto:info@x-med.pro">info@x-med.pro</a> | <a href="#">Unsubscribe</a>
       </div>
     </div>
   </div>

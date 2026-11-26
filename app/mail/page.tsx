@@ -887,8 +887,6 @@ export default function MailDashboard() {
                     className="bg-transparent text-sm text-emerald-600 dark:text-emerald-450 border-none outline-none focus:ring-0 focus:outline-none cursor-pointer font-bold pr-6"
                   >
                     <option value="info" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">info@x-med.pro</option>
-                    <option value="sales" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">sales@x-med.pro</option>
-                    <option value="support" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">support@x-med.pro</option>
                   </select>
                 </div>
  

@@ -36,7 +36,7 @@ export const siteConfig = {
   "domain": "https://x-med.pro",
   "tagline": "Research-grade peptides, batch-tested and shipped across the EU.",
   "description": "X-Med supplies research peptides and compounds for laboratory and research use, with third-party purity testing, discreet EU shipping, and every vial paired with free bacteriostatic water.",
-  "supportEmail": "support@x-med.pro",
+  "supportEmail": "info@x-med.pro",
   "disclaimer": "All products sold by X-Med are intended strictly for laboratory and in-vitro research use by qualified individuals and institutions. They are not drugs, food, or cosmetics, are not for human or animal consumption, and are not evaluated or approved for the diagnosis, treatment, cure, or prevention of any disease. Nothing on this site constitutes medical advice."
 };
 
@@ -159,7 +159,7 @@ export const products: Product[] = [
   },
   {
     "slug": "bpc-157-5mg",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783369834/xmed27_ou6g8b.png",
+    "image": "/images/xmed27.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -214,7 +214,7 @@ export const products: Product[] = [
   },
   {
     "slug": "tb-500-10mg",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783369827/xmed26_xjvze2.png",
+    "image": "/images/xmed26.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -492,7 +492,7 @@ export const products: Product[] = [
   },
   {
     "slug": "ipamorelin-5mg",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783573535/impamorline_ubmq9q.png",
+    "image": "/images/ipamorelin-5mg.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -882,7 +882,7 @@ export const products: Product[] = [
   },
   {
     "slug": "retatrutide-5mg",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783369836/xmed12_pzkuwz.png",
+    "image": "/images/xmed12.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -929,7 +929,7 @@ export const products: Product[] = [
   },
   {
     "slug": "retatrutide-10mg",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783369833/xmed11_hfuhpe.png",
+    "image": "/images/xmed11.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -971,7 +971,7 @@ export const products: Product[] = [
   },
   {
     "slug": "retatrutide-10mg-quick-pen",
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783446972/ChatGPT_Image_Jul_7_2026_06_14_47_AM_ttkfde.png",
+    "image": "/images/retatrutide-pen.png",
     "bogo": false,
     "specifications": {
       "purity": "99.2% - 99.8% (HPLC verified)",
@@ -1295,7 +1295,7 @@ export const products: Product[] = [
         "a": "It is designed for intravenous (IV) use only and must be administered strictly under the supervision of a qualified healthcare professional."
       }
     ],
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct1_o0r9an.png",
+    "image": "/images/glutathione-1200mg.png",
     "bogo": false,
     "specifications": {
       "purity": "Sterile formulation",
@@ -1342,7 +1342,7 @@ export const products: Product[] = [
         "a": "No. This product is strictly for laboratory and in-vitro research use, not for human or animal consumption."
       }
     ],
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct2_yg0wr9.png",
+    "image": "/images/pt-141.png",
     "bogo": false,
     "specifications": {
       "purity": "99% HPLC verified",
@@ -1389,7 +1389,7 @@ export const products: Product[] = [
         "a": "It is designed for intramuscular (IM) use only and should be administered under professional medical supervision."
       }
     ],
-    "image": "https://res.cloudinary.com/tedfhije/image/upload/v1783571478/xmedproduct3_v95s4k.png",
+    "image": "/images/l-carnitine-500mg.png",
     "bogo": false,
     "specifications": {
       "purity": "Sterile formulation",

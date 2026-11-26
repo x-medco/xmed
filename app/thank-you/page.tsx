@@ -103,7 +103,7 @@ function ThankYouContent() {
       {/* Support disclaimer */}
       <div className="mt-8 border-t border-slate-100 pt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
         <Mail className="w-4 h-4 text-blue-650" />
-        <span>Need help with reconstitution? Email support@x-med.pro</span>
+        <span>Need help with reconstitution? Email info@x-med.pro</span>
       </div>
     </motion.div>
   );
