@@ -8,11 +8,9 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
 import OverviewTab from '@/components/admin/OverviewTab';
-import LiveVisitorsTab from '@/components/admin/LiveVisitorsTab';
 import SalesTab from '@/components/admin/SalesTab';
 import ProductsTab from '@/components/admin/ProductsTab';
 import CustomersTab from '@/components/admin/CustomersTab';
-import TrafficTab from '@/components/admin/TrafficTab';
 import InventoryTab from '@/components/admin/InventoryTab';
 import OrdersTab from '@/components/admin/OrdersTab';
 import SettingsTab from '@/components/admin/SettingsTab';
@@ -21,11 +19,9 @@ import EmailLogsTab from '@/components/admin/EmailLogsTab';
 
 const tabs = [
   { id: 'overview', name: 'Overview', icon: LayoutDashboard },
-  { id: 'live', name: 'Live Visitors', icon: Users, live: true },
   { id: 'sales', name: 'Sales', icon: Euro },
   { id: 'products', name: 'Products', icon: ShoppingBag },
   { id: 'customers', name: 'Customers', icon: ShoppingCart },
-  { id: 'traffic', name: 'Traffic & Marketing', icon: Compass },
   { id: 'inventory', name: 'Inventory', icon: Package },
   { id: 'orders', name: 'Orders', icon: BarChart2 },
   { id: 'automations', name: 'Email Automations', icon: Mail },
@@ -135,16 +131,12 @@ export default function AdminPage() {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab data={dashboardData} />;
-      case 'live':
-        return <LiveVisitorsTab data={dashboardData} />;
       case 'sales':
         return <SalesTab data={dashboardData} />;
       case 'products':
         return <ProductsTab data={dashboardData} />;
       case 'customers':
         return <CustomersTab data={dashboardData} />;
-      case 'traffic':
-        return <TrafficTab data={dashboardData} />;
       case 'inventory':
         return <InventoryTab data={dashboardData} />;
       case 'orders':
@@ -195,12 +187,6 @@ export default function AdminPage() {
                   <IconComp className="w-4 h-4" />
                   <span>{tab.name}</span>
                 </div>
-                {tab.live && (
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                  </span>
-                )}
               </button>
             );
           })}
@@ -244,7 +230,7 @@ export default function AdminPage() {
 
           {/* Date range picker filter & Theme toggle */}
           <div className="flex items-center gap-3">
-            {activeTab !== 'settings' && activeTab !== 'live' && (
+            {activeTab !== 'settings' && (
               <div className="flex rounded-xl bg-slate-105 dark:bg-slate-900 p-1 border border-slate-200/50 w-fit">
                 {[
                   { id: 'today', name: 'Today' },
@@ -378,10 +364,8 @@ export default function AdminPage() {
             
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'live', name: 'Live Visitors', icon: Users, live: true },
                 { id: 'sales', name: 'Sales Stats', icon: Euro },
                 { id: 'customers', name: 'Customers Log', icon: ShoppingCart },
-                { id: 'traffic', name: 'Traffic & SEO', icon: Compass },
                 { id: 'inventory', name: 'Stock Levels', icon: Package },
                 { id: 'marketing-emails', name: 'Email Logs', icon: Send },
                 { id: 'settings', name: 'Settings Control', icon: Settings }
@@ -403,12 +387,6 @@ export default function AdminPage() {
                   >
                     <IconComp className="w-4 h-4" />
                     <span className="truncate">{tab.name}</span>
-                    {tab.live && (
-                      <span className="relative flex h-1.5 w-1.5 ml-auto">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-                      </span>
-                    )}
                   </button>
                 );
               })}

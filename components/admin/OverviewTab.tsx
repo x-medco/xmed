@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Users, ShoppingBag, 
-  Euro, Percent, ShieldCheck, MapPin 
+  Euro, Percent, ShieldCheck, MapPin, Package 
 } from 'lucide-react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, 
@@ -119,13 +119,12 @@ export default function OverviewTab({ data }: OverviewTabProps) {
       textColor: 'text-emerald-600'
     },
     {
-      title: 'Active Right Now',
-      value: stats.liveCount,
+      title: 'Active Catalog',
+      value: `${data.products?.length || 69} Products`,
       growth: null,
-      icon: Users,
+      icon: Package,
       color: 'from-amber-500 to-orange-500',
-      textColor: 'text-amber-600',
-      live: true
+      textColor: 'text-amber-600'
     }
   ];
 
@@ -154,12 +153,6 @@ export default function OverviewTab({ data }: OverviewTabProps) {
             
             <div className="flex items-baseline gap-2 mt-2">
               <span className="font-display font-black text-2xl text-ink leading-none">{c.value}</span>
-              {c.live && (
-                <span className="relative flex h-2.5 w-2.5 ml-1">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                </span>
-              )}
             </div>
 
             {c.growth !== null && c.growth !== undefined && (
