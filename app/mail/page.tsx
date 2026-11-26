@@ -371,7 +371,7 @@ export default function MailDashboard() {
   const totalUnreadCount = getUnreadCount('all');
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 antialiased">
+    <div className="admin-portal flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 antialiased">
       
       {/* 1. DESKTOP SIDEBAR (hidden on mobile) */}
       <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col justify-between select-none flex-shrink-0">

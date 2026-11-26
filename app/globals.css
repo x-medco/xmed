@@ -14,44 +14,75 @@
     color: #0f172a; /* Slate 900 for high-contrast dark fonts */
   }
 
-  /* High-contrast dark mode headings and text */
-  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-    color: #ffffff !important;
+  /* High-contrast storefront typography (always crisp dark slate on luminous light background) */
+  .dark:not(.admin-portal) h1, 
+  .dark:not(.admin-portal) h2, 
+  .dark:not(.admin-portal) h3, 
+  .dark:not(.admin-portal) h4, 
+  .dark:not(.admin-portal) h5, 
+  .dark:not(.admin-portal) h6 {
+    color: #0f172a;
   }
-  .dark body {
+  .dark body:not(.admin-portal) {
+    background-color: #f8fafc;
+    color: #334155;
+  }
+
+  /* Admin & Mail Portal Dark Mode High-Contrast Rules */
+  .dark .admin-portal,
+  .admin-portal.dark {
     background-color: #090d16;
     color: #e2e8f0;
   }
-  .dark .text-ink {
+  .dark .admin-portal h1, .dark .admin-portal h2, .dark .admin-portal h3, 
+  .dark .admin-portal h4, .dark .admin-portal h5, .dark .admin-portal h6,
+  .admin-portal.dark h1, .admin-portal.dark h2, .admin-portal.dark h3,
+  .admin-portal.dark h4, .admin-portal.dark h5, .admin-portal.dark h6 {
+    color: #ffffff !important;
+  }
+  .dark .admin-portal .text-ink,
+  .admin-portal.dark .text-ink {
     color: #f8fafc !important;
   }
-  .dark .text-slate-400,
-  .dark .text-slate-450 {
+  .dark .admin-portal .text-slate-400,
+  .dark .admin-portal .text-slate-450,
+  .admin-portal.dark .text-slate-400,
+  .admin-portal.dark .text-slate-450 {
     color: #94a3b8 !important;
   }
-  .dark .text-slate-500 {
+  .dark .admin-portal .text-slate-500,
+  .admin-portal.dark .text-slate-500 {
     color: #cbd5e1 !important;
   }
-  .dark .text-slate-600 {
+  .dark .admin-portal .text-slate-600,
+  .admin-portal.dark .text-slate-600 {
     color: #e2e8f0 !important;
   }
-  .dark .text-slate-700,
-  .dark .text-slate-800,
-  .dark .text-slate-850,
-  .dark .text-slate-900 {
+  .dark .admin-portal .text-slate-700,
+  .dark .admin-portal .text-slate-800,
+  .dark .admin-portal .text-slate-850,
+  .dark .admin-portal .text-slate-900,
+  .admin-portal.dark .text-slate-700,
+  .admin-portal.dark .text-slate-800,
+  .admin-portal.dark .text-slate-850,
+  .admin-portal.dark .text-slate-900 {
     color: #ffffff !important;
   }
 
-  /* Dark mode glass cards */
-  .dark .glass,
-  .dark .glass-static,
-  .dark .glass-dark {
+  /* Dark mode glass cards inside Admin Portal only */
+  .dark .admin-portal .glass,
+  .dark .admin-portal .glass-static,
+  .dark .admin-portal .glass-dark,
+  .admin-portal.dark .glass,
+  .admin-portal.dark .glass-static,
+  .admin-portal.dark .glass-dark {
     background: rgba(15, 23, 42, 0.85) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     border-top: 1.5px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
   }
-  .dark .glass:hover {
+  .dark .admin-portal .glass:hover,
+  .admin-portal.dark .glass:hover {
     background: rgba(26, 38, 64, 0.9) !important;
     border-color: rgba(59, 130, 246, 0.4) !important;
   }

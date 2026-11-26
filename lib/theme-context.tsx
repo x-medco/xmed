@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 type Theme = 'light' | 'dark';
 
@@ -12,28 +13,35 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light'); // Default to light mode for clear minimal design
+  const [theme, setTheme] = useState<Theme>('light');
+  const pathname = usePathname();
+
+  const isAdminOrMail = pathname?.startsWith('/admin') || pathname?.startsWith('/mail');
 
   useEffect(() => {
-    // Check local storage or system preference
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
+    if (isAdminOrMail) {
+      const savedAdminTheme = localStorage.getItem('admin_theme') as Theme | null;
+      if (savedAdminTheme) {
+        setTheme(savedAdminTheme);
+      } else {
+        setTheme('dark'); // Admin defaults to clean high-contrast dark dashboard
+      }
     } else {
-      const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      setTheme(systemPreference);
+      setTheme('light'); // Storefront is ALWAYS in clean luminous light mode
     }
-  }, []);
+  }, [pathname, isAdminOrMail]);
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === 'dark') {
+    if (isAdminOrMail && theme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    if (isAdminOrMail) {
+      localStorage.setItem('admin_theme', theme);
+    }
+  }, [theme, isAdminOrMail]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));

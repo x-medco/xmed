@@ -153,7 +153,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col md:flex-row text-ink">
+    <div className="admin-portal min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col md:flex-row text-ink">
       
       {/* 1. LEFT SIDEBAR (Hidden on mobile) */}
       <aside className="hidden md:flex w-64 bg-white dark:bg-slate-900 border-r border-slate-200/60 dark:border-slate-800/60 p-5 flex-col gap-6 md:sticky md:top-0 md:h-screen flex-shrink-0 z-40">
